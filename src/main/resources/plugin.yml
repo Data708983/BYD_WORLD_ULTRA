@@ -1,4 +1,4 @@
 name: BYD_WORLD_UTRAL
-version: '1.1-SNAPSHOT-For1.21.6'
+version: '1.2-SNAPSHOT-For1.21.6'
 main: org.data7.bYD_WORLD_UTRAL.BYD_WORLD_UTRAL
 api-version: '1.21'

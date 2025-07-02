@@ -3,6 +3,7 @@ package org.data7.bYD_WORLD_UTRAL;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.data7.bYD_WORLD_UTRAL.PlayerJoin;
 
 public final class BYD_WORLD_UTRAL extends JavaPlugin {
 
@@ -17,6 +18,12 @@ public final class BYD_WORLD_UTRAL extends JavaPlugin {
         String version = getDescription().getVersion();
         getServer().getLogger().info("Plugin version:" + "\033[1;34m"+ version +"\033[0m");
 
+        //配置文件
+        saveResource("config.yml", false);
+        saveResource("broadcast.yml", false);
+
+        //注册监听
+        this.getServer().getPluginManager().registerEvents(new PlayerJoin.PlayerListener(), this);
     }
 
     @Override
