@@ -8,13 +8,13 @@ blacklist:
   - "adsddd"
 # 默认公告
 default:
-    title: "Welcome to 1.21.7 !"
-    content: "Welcome to BYDWORLD !"
+  title: "Default notice"
+  content: "Default content"
 # 玩家特定公告
 player:
-    - name: "example name"
-      title: "name: Welcome to 1.21.7 !"
-      content: "name: Welcome to BYDWORLD !"
-    - name: "example name2"
-      title: "name2: Welcome to 1.21.7 !"
-      content: "name2: Welcome to BYDWORLD !"
+  - name: "example name1"
+    title: "name1: Welcome to 1.21.7 !"
+    content: "name: Welcome to BYDWORLD !"
+  - name: "example name2"
+    title: "name2: Welcome to 1.21.7 !"
+    content: "name2: Welcome to BYDWORLD !"

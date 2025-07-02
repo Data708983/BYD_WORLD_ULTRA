@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputFilter;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class PlayerJoin {
     private static final Logger log = LoggerFactory.getLogger(PlayerJoin.class);
@@ -38,9 +39,6 @@ public class PlayerJoin {
                             .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
                     .append(Component.text("进入服务器!"));
 
-            // 获取公告消息
-            this.loadBroadcast(player);
-
             // 设置欢迎消息
             event.joinMessage(joinMessage);
 
@@ -53,6 +51,9 @@ public class PlayerJoin {
             PotionEffect joinEffect = new PotionEffect(PotionEffectType.GLOWING,10,1,false,false);
             player.addPotionEffect(joinEffect);
 
+
+            // 获取公告消息
+            this.loadBroadcast(player);
         }
         @EventHandler
         public void PLayerExit(PlayerQuitEvent event){
@@ -91,11 +92,7 @@ public class PlayerJoin {
             File broadcastFile = new File(BYD_WORLD_UTRAL.getPlugin(BYD_WORLD_UTRAL.class).getDataFolder(), "broadcast.yml");
             YamlConfiguration broadcastConfig = YamlConfiguration.loadConfiguration(broadcastFile);
             if (!broadcastFile.exists()) {
-                try {
-                    broadcastConfig.save(broadcastFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                BYD_WORLD_UTRAL.getPlugin(BYD_WORLD_UTRAL.class).saveResource("config.yml", false);
             }
             Bukkit.getServer().getLogger().info("BROADCAST配置加载成功!");
             // 是否启用Broadcast
@@ -111,8 +108,8 @@ public class PlayerJoin {
             // 获取玩家特定公告
             List<Map<?, ?>> playerList = broadcastConfig.getMapList("player");
 
-            //debug模式
-            if(true){
+            // debug模式
+            if(debug){
                 Bukkit.getServer().getLogger().info(
                         "\n||DEBUG(可在配置文件 broadcast.yml 关闭)|| Broadcast Statues:\n"
                                 + "Debug:\t" + debug + "\n"
@@ -125,12 +122,38 @@ public class PlayerJoin {
                     String name = (String) players.get("name");
                     String title = (String) players.get("title");
                     String content = (String) players.get("content");
-                    Bukkit.getServer().getLogger().info("Player:\t" + name);
-                    Bukkit.getServer().getLogger().info("  Title:\t" + title);
-                    Bukkit.getServer().getLogger().info("  Content:\t" + content);
+                    Bukkit.getServer().getLogger().info("\nPlayer:\t" + name
+                            + "\nTitle:\t" + title
+                            + "\nContent:\t" + content + "\n"
+                    );
                 }
             }
+            boolean uniquePlayer = false;
+            String Title = "";
+            String Contentent = "";
 
+            // 输出
+            if(enableBroadcast){
+                if (!blacklist.contains(player.getName())){
+                    for(Map<?, ?> players : playerList) {
+                        String name = (String) players.get("name");
+                        String title = (String) players.get("title");
+                        String content = (String) players.get("content");
+                        if (player.getName().equals(name)) {
+                            uniquePlayer = true;
+                            Title = title;
+                            Contentent = content;
+                            break;
+                        }
+                    }
+                    if (!uniquePlayer) {
+                        Title = defaultTitle;
+                        Contentent = defaultContent;
+                    }
+                    player.sendRawMessage(Title);
+                    player.sendRawMessage(Contentent);
+                }
+            }
         }
     }
 }
