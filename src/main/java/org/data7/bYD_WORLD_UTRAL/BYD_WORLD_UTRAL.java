@@ -5,6 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.data7.bYD_WORLD_UTRAL.PlayerJoin;
+import org.data7.bYD_WORLD_UTRAL.Tpa;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +36,16 @@ public final class BYD_WORLD_UTRAL extends JavaPlugin {
 
         //注册监听
         this.getServer().getPluginManager().registerEvents(new PlayerJoin.PlayerListener(), this);
+
+        Tpa tpa = new Tpa();
+        tpa.connect();
+        tpa.InitialDB();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
     }
+
+
 }
