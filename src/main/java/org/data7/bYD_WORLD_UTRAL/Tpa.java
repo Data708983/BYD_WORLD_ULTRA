@@ -42,7 +42,7 @@ public class Tpa {
             pstmt.setInt(3, 114514);
             pstmt.setInt(4, 1);
 
-            /*用于测试*/
+            /*用于测试 */
             // 执行插入操作
             pstmt.executeUpdate();
             System.out.println("数据插入成功");
