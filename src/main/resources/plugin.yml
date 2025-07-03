@@ -2,3 +2,38 @@ name: BYD_WORLD_UTRAL
 version: '1.2-SNAPSHOT-For1.21.6'
 main: org.data7.bYD_WORLD_UTRAL.BYD_WORLD_UTRAL
 api-version: '1.21'
+
+commands:
+  suicide:
+    description: 🔪紫砂
+    usage: /<command>
+    aliases:
+      - s
+    permission: BYD_WORLD_UTRAL.suicide
+    permission-message: no permission
+  tpa:
+    description: 🧭传送
+    usage: /<command> tpa to/come [playeranme]
+    aliases:
+      - tp
+      - t
+    permission: BYD_WORLD_UTRAL.tpa
+    permission-message: no permission
+  tpac:
+    description: ✅同意传送传送
+    usage: /<command> tpac
+    aliases:
+      - tpc
+      - tc
+    permission: BYD_WORLD_UTRAL.tpac
+    permission-message: no permission
+permissions:
+  BYD_WORLD_UTRAL.suicide:
+    description: 紫砂
+    default: true
+  BYD_WORLD_UTRAL.tpa:
+    description: 传送
+    default: true
+  BYD_WORLD_UTRAL.tpac:
+    description: 接受传送
+    default: true
