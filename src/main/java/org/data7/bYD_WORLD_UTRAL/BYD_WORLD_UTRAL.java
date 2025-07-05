@@ -53,7 +53,6 @@ public final class BYD_WORLD_UTRAL extends JavaPlugin {
 
         this.getCommand("suicide").setExecutor(this);
         this.getCommand("tpa").setExecutor(this);
-        this.getCommand("tpac").setExecutor(this);
     }
 
     @Override
