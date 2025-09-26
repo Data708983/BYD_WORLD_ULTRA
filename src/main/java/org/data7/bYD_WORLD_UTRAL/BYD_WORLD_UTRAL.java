@@ -17,13 +17,54 @@ import static org.data7.bYD_WORLD_UTRAL.Tpa.*;
 
 public final class BYD_WORLD_UTRAL extends JavaPlugin {
 
+    // 从左到右的渐变生成方法
+    private String generateHorizontalGradientText(String text) {
+        String[] lines = text.split("\n");
+        StringBuilder result = new StringBuilder();
+
+        // 起始颜色 (#f12eff) 和结束颜色 (#00fbff) 的RGB值
+        int[] startRGB = {241, 46, 255};   // #f12eff
+        int[] endRGB = {0, 251, 255};      // #00fbff
+
+        for (String line : lines) {
+            if (line.isEmpty()) {
+                result.append("\n");
+                continue;
+            }
+
+            int lineLength = line.length();
+            for (int j = 0; j < lineLength; j++) {
+                // 计算当前字符的颜色（水平方向的线性插值）
+                double ratio = (double) j / (lineLength - 1);
+                int r = (int) (startRGB[0] + (endRGB[0] - startRGB[0]) * ratio);
+                int g = (int) (startRGB[1] + (endRGB[1] - startRGB[1]) * ratio);
+                int b = (int) (startRGB[2] + (endRGB[2] - startRGB[2]) * ratio);
+
+                // 为每个字符添加ANSI颜色代码
+                result.append(String.format("\u001B[38;2;%d;%d;%dm%c", r, g, b, line.charAt(j)));
+            }
+            result.append("\u001B[0m\n"); // 重置颜色并换行
+        }
+
+        return result.toString();
+    }
+
     @Override
     public void onEnable() {
+
         // Plugin startup logic
-        getServer().getLogger().info("\n ____  _  _  ____        __  __  ____  ____    __    __   \n" +
-                "(  _ \\( \\/ )(  _ \\      (  )(  )(_  _)(  _ \\  /__\\  (  )  \n" +
-                " ) _ < \\  /  )(_) ) ___  )(__)(   )(   )   / /(__)\\  )(__ \n" +
-                "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)");
+//        getServer().getLogger().info("\n ____  _  _  ____        __  __  ____  ____    __    __   \n" +
+//                "(  _ \\( \\/ )(  _ \\      (  )(  )(_  _)(  _ \\  /__\\  (  )  \n" +
+//                " ) _ < \\  /  )(_) ) ___  )(__)(   )(   )   / /(__)\\  )(__ \n" +
+//                "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)");
+
+        getServer().getLogger().info(generateHorizontalGradientText(
+                "\n ____  _  _  ____        __  __  ____  ____    __    __   \n" +
+                        "(  _ \\( \\/ )(  _ \\      (  )(  )(_  _)(  _ \\  /__\\  (  )  \n" +
+                        " ) _ < \\  /  )(_) ) ___  )(__)(   )(   )   / /(__)\\  )(__ \n" +
+                        "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)"
+        ));
+
         getServer().getLogger().info("BYD_WORLD_UTRAL is enabled!");
         String version = getDescription().getVersion();
         getServer().getLogger().info("Plugin version:" + "\033[1;34m" + version + "\033[0m");
