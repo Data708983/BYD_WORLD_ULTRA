@@ -1,14 +1,26 @@
 package org.data7.bYD_WORLD_UTRAL;
 
+import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
+import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
+import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.data7.bYD_WORLD_UTRAL.Placeholder.HolderExpansions;
+import org.data7.bYD_WORLD_UTRAL.advs.AdvancementTabNamespaces;
+import org.data7.bYD_WORLD_UTRAL.advs.tab0.Bread2;
+import org.data7.bYD_WORLD_UTRAL.advs.tab0.Ender_pearl1;
+import org.data7.bYD_WORLD_UTRAL.advs.tab0.Oak_sapling3;
 
 import java.io.File;
 import java.util.UUID;
@@ -16,6 +28,10 @@ import java.util.UUID;
 import static org.data7.bYD_WORLD_UTRAL.Tpa.*;
 
 public final class BYD_WORLD_UTRAL extends JavaPlugin {
+
+    public static AdvancementTab advancementTab;
+    private RootAdvancement root;
+    private UltimateAdvancementAPI api;
 
     // 从左到右的渐变生成方法
     private String generateHorizontalGradientText(String text) {
@@ -94,6 +110,39 @@ public final class BYD_WORLD_UTRAL extends JavaPlugin {
 
         this.getCommand("suicide").setExecutor(this);
         this.getCommand("tpa").setExecutor(this);
+
+//        //自定义成就有关
+//
+//        api = UltimateAdvancementAPI.getInstance((Plugin) this);
+//
+//        advancementTab = api.createAdvancementTab("your_tab_name");
+//
+//        AdvancementDisplay rootDisplay = new AdvancementDisplay(Material.GRASS_BLOCK, "Example root", AdvancementFrameType.TASK, true, true, 0, 0, "description");
+//
+//        root = new RootAdvancement(advancementTab, "root", rootDisplay, "textures/block/stone.png");
+//
+//        advancementTab.registerAdvancements(root);
+//
+//        Bukkit.getPluginManager().registerEvents(new CustomeAdvancements(), this);
+        initializeTabs();
+
+        //PlaceHolder
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
+            new HolderExpansions(this).register();
+        }
+
+    }
+
+    public AdvancementTab tab0;
+
+    public void initializeTabs() {
+        api = UltimateAdvancementAPI.getInstance(this);
+        tab0 = api.createAdvancementTab(AdvancementTabNamespaces.tab0_NAMESPACE);
+        RootAdvancement oak_sapling0 = new RootAdvancement(tab0, "oak_sapling0", new AdvancementDisplay(Material.OAK_SAPLING, "oak_sapling0", AdvancementFrameType.TASK, true, true, 0f, 0f ),"textures/block/nether_portal.png",1);
+        Ender_pearl1 ender_pearl1 = new Ender_pearl1(oak_sapling0);
+        Bread2 bread2 = new Bread2(oak_sapling0);
+        Oak_sapling3 oak_sapling3 = new Oak_sapling3(ender_pearl1,bread2);
+        tab0.registerAdvancements(oak_sapling0 ,ender_pearl1 ,bread2 ,oak_sapling3 );
     }
 
     @Override

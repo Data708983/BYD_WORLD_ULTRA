@@ -2,6 +2,7 @@ package org.data7.bYD_WORLD_UTRAL;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.mojang.brigadier.Message;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -37,7 +38,7 @@ public class PlayerJoin {
             Component joinMessage = Component.text("🎉欢迎")
                     .append(Component.text(player.getName())
                             .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
-                    .append(Component.text("进入服务器!"));
+                    .append(Component.text("进入服务器!\n"));
 
             // 设置欢迎消息
             event.joinMessage(joinMessage);
@@ -150,8 +151,13 @@ public class PlayerJoin {
                         Title = defaultTitle;
                         Contentent = defaultContent;
                     }
-                    player.sendRawMessage(Title);
-                    player.sendRawMessage(Contentent);
+
+                    if (Title != null) {
+                        player.sendRawMessage(PlaceholderAPI.setPlaceholders(player, Title));
+                    }
+                    if (Contentent != null) {
+                        player.sendRawMessage(PlaceholderAPI.setPlaceholders(player, Contentent));
+                    }
                 }
             }
         }

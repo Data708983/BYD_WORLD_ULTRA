@@ -3,6 +3,9 @@ version: '1.3-SNAPSHOT-For1.21.7'
 main: org.data7.bYD_WORLD_UTRAL.BYD_WORLD_UTRAL
 api-version: '1.21'
 
+depend: [UltimateAdvancementAPI]
+softdepend: ["PlaceholderAPI"]
+
 commands:
   suicide:
     description: 🔪紫砂
