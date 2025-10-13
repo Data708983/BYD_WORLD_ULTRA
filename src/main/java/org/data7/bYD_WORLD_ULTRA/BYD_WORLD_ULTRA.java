@@ -9,8 +9,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.data7.bYD_WORLD_ULTRA.PAPI.PAPI;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.data7.bYD_WORLD_ULTRA.Tpa.*;
@@ -26,6 +28,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
         int[] startRGB = {241, 46, 255};   // #f12eff
         int[] endRGB = {0, 251, 255};      // #00fbff
 
+        int index = 0;
         for (String line : lines) {
             if (line.isEmpty()) {
                 result.append("\n");
@@ -43,7 +46,12 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                 // 为每个字符添加ANSI颜色代码
                 result.append(String.format("\u001B[38;2;%d;%d;%dm%c", r, g, b, line.charAt(j)));
             }
-            result.append("\u001B[0m\n"); // 重置颜色并换行
+            if (index == Arrays.stream(lines).count() - 1) {
+                result.append("\u001B[0m"); // 重置颜色
+            }
+            else result.append("\u001B[0m\n"); // 重置颜色并换行
+
+            index++;
         }
 
         return result.toString();
@@ -59,15 +67,20 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
 //                "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)");
 
         getServer().getLogger().info(generateHorizontalGradientText(
-                " ____  _  _  ____        __  __  __    ____  ____    __   \n" +
+                "\n ____  _  _  ____        __  __  __    ____  ____    __   \n" +
                 "(  _ \\( \\/ )(  _ \\      (  )(  )(  )  (_  _)(  _ \\  /__\\  \n" +
                 " ) _ < \\  /  )(_) ) ___  )(__)(  )(__   )(   )   / /(__)\\ \n" +
-                "(____/ (__) (____/ (___)(______)(____) (__) (_)\\_)(__)(__)"
+                "(____/ (__) (____/ (___)(______)(____) (__) (_)\\_)(__)(__)\n"
         ));
 
-        getServer().getLogger().info("BYD_WORLD_ULTRA is enabled!");
+        getServer().getLogger().info(generateHorizontalGradientText("BYD_WORLD_ULTRA is enabled!"));
         String version = getDescription().getVersion();
         getServer().getLogger().info("Plugin version:" + "\033[1;34m" + version + "\033[0m");
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new PAPI().register();
+            getServer().getLogger().info(generateHorizontalGradientText("BYD_PAPI_EXPANSION is enabled!"));
+        }
+        else getServer().getLogger().info(generateHorizontalGradientText("BYD_PAPI_EXPANSION is disabled!(PLUGIN_NOT_FOUND)"));
 
         //配置文件
         File config = new File(getDataFolder(), "config.yml");
@@ -110,9 +123,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /**
-         * 紫砂
-         */
+        /** 紫砂 */
         if (label.equalsIgnoreCase("suicide")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
@@ -327,5 +338,4 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
         }
         return false;
     }
-
 }

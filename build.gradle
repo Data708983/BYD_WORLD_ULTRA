@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.data7'
-version = '1.0-SNAPSHOT'
+version = '2.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -16,10 +16,14 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        url = 'https://repo.extendedclip.com/releases/'
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.6-R0.1-SNAPSHOT")
+    compileOnly('me.clip:placeholderapi:2.11.6')
 }
 
 tasks {

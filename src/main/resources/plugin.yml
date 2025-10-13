@@ -1,8 +1,13 @@
 name: BYD_WORLD_ULTRA
-version: '2.0.0-SNAPSHOT-For1.21.8'
+version: '2.0.1-SNAPSHOT-For1.21.8'
 main: org.data7.bYD_WORLD_ULTRA.BYD_WORLD_ULTRA
 api-version: '1.21'
-
+softdepend: ["PlaceholderAPI"]
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
 commands:
   suicide:
     description: 🔪紫砂
