@@ -5,7 +5,9 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +16,8 @@ import org.data7.bYD_WORLD_ULTRA.PAPI.PAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -173,17 +177,15 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 playercome = player.getUniqueId();
                                 if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
                                     tpa(playercome.toString(),playercome.toString());
-                                    Component PlayerMsg = Component.text("🏠你回到了家中!", TextColor.color(255, 255, 225));
-                                    player.sendMessage(PlayerMsg);
                                     return true;
                                 }
+                                else return true;
                             }
                             else{
                                 player.sendMessage(Component.text("❎命令用法错误！正确格式: /tpa to <玩家名> 或 /tpa come <玩家名> 或 /tpa home")
                                         .color(TextColor.color(255, 0, 0)));
                                 return true;
                             }
-                            break;
                         case 2:
                             subCommand = args[0];
                             targetName = args[1];
@@ -354,10 +356,9 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 playercome = player.getUniqueId();
                                 if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
                                     tpa(playercome.toString(),playercome.toString());
-                                    Component PlayerMsg = Component.text("🏠你回到了家中!", TextColor.color(255, 255, 225));
-                                    player.sendMessage(PlayerMsg);
                                     return true;
                                 }
+                                else return true;
                             }
                             else {
                                 player.sendMessage(Component.text("❎命令用法错误！正确格式: /tpa to <玩家名> 或 /tpa come <玩家名> 或 /tpa home")
@@ -369,8 +370,59 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
                 }
             } else return false;
-
+        }
+        if (label.equalsIgnoreCase("sethome")){
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("§c只有玩家才能使用此命令！");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (args.length != 0){
+                player.sendMessage(Component.text("❎命令用法错误！正确格式: /sethome")
+                        .color(TextColor.color(255, 0, 0)));
+                return true;
+            }
+            else {
+                Tpa.sethome(player);
+                return true;
+            }
         }
         return false;
+    }
+
+    private Location parseLocationString(String locationStr, Player player) {
+        try {
+            // 假设格式为 "world:x,y,z" 或 "x,y,z"
+            String[] parts = locationStr.split(":");
+            World world;
+            String coordsStr;
+
+            if (parts.length == 2) {
+                // 格式为 "world:x,y,z"
+                String worldName = parts[0];
+                world = Bukkit.getWorld(worldName);
+                coordsStr = parts[1];
+            } else {
+                // 格式为 "x,y,z" - 使用玩家当前世界
+                world = player.getWorld();
+                coordsStr = locationStr;
+            }
+
+            if (world == null) {
+                world = player.getWorld(); // 如果世界不存在，使用玩家当前世界
+            }
+
+            // 解析坐标
+            String[] coords = coordsStr.split(",");
+            double x = Double.parseDouble(coords[0]);
+            double y = Double.parseDouble(coords[1]);
+            double z = Double.parseDouble(coords[2]);
+
+            return new Location(world, x, y, z);
+
+        } catch (Exception e) {
+//            System.out.println("解析位置字符串时出错: " + e.getMessage());
+            return null;
+        }
     }
 }

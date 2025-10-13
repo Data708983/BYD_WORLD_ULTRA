@@ -13,3 +13,5 @@ confirm: true
 type: "near"
 #记录条数
 record: 50
+#改变家位置的冷却时间
+homecooldown: 86400

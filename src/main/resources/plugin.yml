@@ -18,10 +18,17 @@ commands:
     permission-message: no permission
   tpa:
     description: 🧭传送
-    usage: /<command> tpa to/come [playeranme]
+    usage: /<command> to/come [playeranme]
     aliases:
       - t
     permission: BYD_WORLD_ULTRA.tpa
+    permission-message: no permission
+  sethome:
+    description: 🏡设置家
+    usage: /<command>
+    aliases:
+      - t
+    permission: BYD_WORLD_ULTRA.sethome
     permission-message: no permission
 permissions:
   BYD_WORLD_UTRAL.suicide:
@@ -29,4 +36,7 @@ permissions:
     default: true
   BYD_WORLD_UTRAL.tpa:
     description: 传送
+    default: true
+  BYD_WORLD_ULTRA.sethome:
+    description: 设置家
     default: true
