@@ -39,47 +39,26 @@ public class Tpa {
                 "available INTEGER);";
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
              Statement stmt = conn.createStatement()) {
-            // 执行SQL语句
             stmt.execute(sql);
-//            System.out.println("表创建成功（如果不存在）");
         } catch (SQLException e) {
-//            System.out.println(e.getMessage());
         }
-
         String sqlofHome = "CREATE TABLE IF NOT EXISTS HOME " +
                 "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "uuid TEXT NOT NULL UNIQUE, " +
-                "location TEXT NOT NULL, " +
-                "timestemp INTEGER);"; // location form :"123,123,123"
+                "world TEXT NOT NULL, " +    // 新增世界字段
+                "x REAL NOT NULL, " +        // x坐标
+                "y REAL NOT NULL, " +        // y坐标
+                "z REAL NOT NULL, " +        // z坐标
+                "yaw REAL, " +               // 朝向yaw
+                "pitch REAL, " +             // 朝向pitch
+                "timestemp INTEGER);";
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
              Statement stmt = conn.createStatement()) {
-            // 执行SQL语句
             stmt.execute(sqlofHome);
-//            System.out.println("表创建成功（如果不存在）");
         } catch (SQLException e) {
-//            System.out.println(e.getMessage());
         }
 
         loadTpa();
-//        // 插入数据的SQL语句
-//        String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
-//
-//        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
-//             PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-//            // 设置插入的数据
-//            pstmt.setString(1, "e4037d10-e436-35e4-9c45-594a12ff44d0");
-//            pstmt.setString(2, "e4037d10-e436-35e4-9c45-594a12ff44d0");
-//            pstmt.setLong(3, 114514);
-//            pstmt.setInt(4, 1);
-//
-//            /*用于测试 */
-//            // 执行插入操作
-//            pstmt.executeUpdate();
-//            System.out.println("数据插入成功");
-//
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
     }
     /** 加载 TPA 传送模块: tpa.yml */
     public static class TpaConfig {
@@ -120,51 +99,25 @@ public class Tpa {
         File tpaFile = new File(plugin.getDataFolder(), "tpa.yml");
         YamlConfiguration tpaConfig = YamlConfiguration.loadConfiguration(tpaFile);
 
-        // 如果文件不存在，创建默认配置
         if (!tpaFile.exists()) {
-            // 保存默认配置（注意：这里应该保存 tpa.yml 而不是 config.yml）
             plugin.saveResource("tpa.yml", false);
             tpaConfig = YamlConfiguration.loadConfiguration(tpaFile);
         }
 
-        // 读取所有配置值
         boolean enableTpa = tpaConfig.getBoolean("enable", true);
         boolean debug = tpaConfig.getBoolean("debug", false);
-        long cooldown = tpaConfig.getLong("cooldown", 60); // 默认30秒
-        int reply = tpaConfig.getInt("reply", 60); // 默认60秒
+        long cooldown = tpaConfig.getLong("cooldown", 60);
+        int reply = tpaConfig.getInt("reply", 60);
         boolean confirm = tpaConfig.getBoolean("confirm", true);
         String type = tpaConfig.getString("type", "teleport");
-        int record = tpaConfig.getInt("record", 20); // 默认记录20条
+        int record = tpaConfig.getInt("record", 20);
         long homecooldown = tpaConfig.getLong("homecooldown",86400);
 
-        // 在debug模式下打印数据库记录
-        if(false) {
-            String readSql = "SELECT * FROM TPA";
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(readSql)) {
-
-                while (rs.next()) {
-                    Bukkit.getServer().getLogger().info("id: " + rs.getInt("id"));
-                    Bukkit.getServer().getLogger().info("uuidfrom: " + rs.getString("uuidfrom"));
-                    Bukkit.getServer().getLogger().info("uuidto: " + rs.getString("uuidto"));
-                    Bukkit.getServer().getLogger().info("timestemp: " + rs.getLong("timestemp"));
-                    Bukkit.getServer().getLogger().info("available: " + rs.getInt("available"));
-                    Bukkit.getServer().getLogger().info("record: " + rs.getInt("record"));
-                }
-            } catch (SQLException e) {
-                Bukkit.getServer().getLogger().log(Level.SEVERE, "数据库查询错误", e);
-            }
-        }
-
-        // 返回包含所有配置值的对象
         return new TpaConfig(enableTpa, debug, cooldown, reply, confirm, type, record, homecooldown);
     }
 
     public static long isOnCoolDown(String playeruuid, long cooldown, int reply) {
-        // 获取现在的时间戳
         long now_time = System.currentTimeMillis();
-        // 修改SQL以获取最近的一条记录（按id降序）
         String readSql = "SELECT * FROM TPA WHERE uuidfrom = ? ORDER BY id DESC LIMIT 1";
 
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
@@ -185,7 +138,6 @@ public class Tpa {
                     Bukkit.getServer().getLogger().info("available: " + rs.getInt("available"));
                     Bukkit.getServer().getLogger().info("与当前时间差: " + timeDifference + "ms");
                 }
-                // 检查时间差是否小于冷却时间
                 if (timeDifference < cooldown*1000) {
                     long remainingTime = (cooldown * 1000 - timeDifference)/1000;
                     Player fromPlayer = Bukkit.getPlayer(UUID.fromString(playeruuid));
@@ -200,18 +152,13 @@ public class Tpa {
         return -1;
     }
     public static boolean tpa(String playerfrom,String playerto){
-        // 获取现在的时间戳
         long now_time = System.currentTimeMillis();
-        // 获取玩家对象
         Player fromPlayer = Bukkit.getPlayer(UUID.fromString(playerfrom));
-        Player toPlayer = Bukkit.getPlayer(UUID.fromString(playerto)); // if tpa home => toPlayer == fromPlayer
-        // 获取配置类型
+        Player toPlayer = Bukkit.getPlayer(UUID.fromString(playerto));
         String type = loadTpa().getType();
 
         if(toPlayer != fromPlayer){
-            // 根据类型执行不同的传送方式
             if (type.equalsIgnoreCase("absolute")) {
-                // 完全复制目标位置（包括朝向）
                 Location targetLocation = toPlayer.getLocation().clone();
 
                 for (int i = 0; i < 500; i++) {
@@ -223,12 +170,9 @@ public class Tpa {
                             .count(1)
                             .spawn();
                 }
-                // 获取所有在线玩家
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    // 为每个在线玩家播放音效
                     onlinePlayer.playSound(fromPlayer.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 5f, 5f);
                 }
-                // 发光
                 PotionEffect joinEffect = new PotionEffect(PotionEffectType.GLOWING,10,1,false,false);
                 fromPlayer.addPotionEffect(joinEffect);
 
@@ -236,7 +180,6 @@ public class Tpa {
                 String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
                 try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                      PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-                    // 设置插入的数据
                     pstmt.setString(1, playerfrom);
                     pstmt.setString(2, playerto);
                     pstmt.setLong(3, now_time);
@@ -247,7 +190,6 @@ public class Tpa {
                 }
             }
             else if (type.equalsIgnoreCase("near")) {
-                // 完全复制目标位置（包括朝向）
                 Location targetLocation = toPlayer.getLocation().clone();
                 int centerX = (int) targetLocation.getX();
                 int centerY = (int) targetLocation.getY();
@@ -255,7 +197,6 @@ public class Tpa {
                 Map<String, Boolean> pos = new HashMap<>();
                 List<String> safePositions = new ArrayList<>();
 
-                // 遍历 5×5×3 区域 (x和z方向各±2，y方向各±1)
                 for (int dx = -2; dx <= 2; dx++) {
                     for (int dy = -1; dy <= 1; dy++) {
                         for (int dz = -2; dz <= 2; dz++) {
@@ -266,11 +207,9 @@ public class Tpa {
                             int[] coordinates = {checkX, checkY, checkZ};
                             boolean isSafe = is_safe(toPlayer, coordinates);
 
-                            // 使用坐标字符串作为键，避免数组引用问题
                             String key = checkX + "," + checkY + "," + checkZ;
                             pos.put(key, isSafe);
 
-                            // 将安全位置添加到列表中（排除基准位置）
                             if (isSafe && (dx != 0 || dy != 0 || dz != 0)) {
                                 safePositions.add(key);
                             }
@@ -285,24 +224,20 @@ public class Tpa {
                     Bukkit.getServer().getLogger().info("Target Location: " + centerX + ", " + centerY + ", " + centerZ);
                     Bukkit.getServer().getLogger().info("Center is Safe? " + is_safe(toPlayer, new int[]{centerX, centerY, centerZ}));
                     Bukkit.getServer().getLogger().info("Total positions checked: " + pos.size());
-                    // 统计安全位置数量
                     long safeCount = pos.values().stream().filter(Boolean::booleanValue).count();
                     Bukkit.getServer().getLogger().info("Safe positions: " + safeCount + "/" + pos.size());
                 }
-                // 选择安全位置
+
                 Location selectedLocation = null;
                 if (!safePositions.isEmpty()) {
-                    // 随机选择一个安全位置
                     Random random = new Random();
                     String selectedKey = safePositions.get(random.nextInt(safePositions.size()));
 
-                    // 解析坐标字符串
                     String[] coords = selectedKey.split(",");
                     int selectedX = Integer.parseInt(coords[0]);
                     int selectedY = Integer.parseInt(coords[1]);
                     int selectedZ = Integer.parseInt(coords[2]);
 
-                    // 创建Location对象
                     selectedLocation = new Location(
                             targetLocation.getWorld(),
                             selectedX + 0.5, // 中心点
@@ -325,12 +260,9 @@ public class Tpa {
                                 .count(1)
                                 .spawn();
                     }
-                    // 获取所有在线玩家
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        // 为每个在线玩家播放音效
                         onlinePlayer.playSound(fromPlayer.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 5f, 5f);
                     }
-                    // 发光
                     PotionEffect joinEffect = new PotionEffect(PotionEffectType.GLOWING,10,1,false,false);
                     fromPlayer.addPotionEffect(joinEffect);
 
@@ -339,7 +271,6 @@ public class Tpa {
                     String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
                     try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                          PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-                        // 设置插入的数据
                         pstmt.setString(1, playerfrom);
                         pstmt.setString(2, playerto);
                         pstmt.setLong(3, now_time);
@@ -349,7 +280,6 @@ public class Tpa {
                         System.out.println(e.getMessage());
                     }
                 } else {
-                    // 没有找到安全位置
                     if (loadTpa().isDebug()) {
                         Bukkit.getServer().getLogger().info("No safe location found around player");
                     }
@@ -359,8 +289,6 @@ public class Tpa {
                 }
                 if (loadTpa().isDebug()) {
                     Bukkit.getServer().getLogger().info("Safe positions (excluding center): " + safePositions.size());
-
-                    // 输出所有安全位置
                     if (!safePositions.isEmpty()) {
                         Bukkit.getServer().getLogger().info("Safe positions: " + String.join("; ", safePositions));
                     }
@@ -368,7 +296,6 @@ public class Tpa {
             } else {
                 Bukkit.getServer().getLogger().info("Tpa ERROR:配置文件传送方式设置错误！");
             }
-            // 播放传送音效
             fromPlayer.playSound(fromPlayer.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
             toPlayer.playSound(toPlayer.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
             return true;
@@ -380,8 +307,7 @@ public class Tpa {
 
             String uuid = fromPlayer.getUniqueId().toString();
             String url = "jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db";
-
-            String selectSQL = "SELECT location, timestemp FROM HOME WHERE uuid = ?";
+            String selectSQL = "SELECT world, x, y, z, yaw, pitch FROM HOME WHERE uuid = ?";
 
             try (Connection conn = DriverManager.getConnection(url);
                  PreparedStatement pstmt = conn.prepareStatement(selectSQL)) {
@@ -390,15 +316,23 @@ public class Tpa {
                 ResultSet rs = pstmt.executeQuery();
 
                 if (rs.next()) {
-                    String locationStr = rs.getString("location");
-                    long timestamp = rs.getLong("timestemp");
+                    String worldName = rs.getString("world");
+                    double x = rs.getDouble("x");
+                    double y = rs.getDouble("y");
+                    double z = rs.getDouble("z");
+                    float yaw = rs.getFloat("yaw");
+                    float pitch = rs.getFloat("pitch");
 
-                    // 解析位置字符串
-                    Location location = parseLocationString(locationStr, fromPlayer);
+                    // 获取世界对象
+                    World world = Bukkit.getWorld(worldName);
+                    if (world == null) {
+                        fromPlayer.sendMessage(Component.text("❎家的世界不存在或未加载！")
+                                .color(TextColor.color(255, 0, 0)));
+                        return false;
+                    }
 
-                    HomeData home = new HomeData(location, timestamp);
-                    homelocation = home.getLocation();
-//                    settime = home.getTimestamp();
+                    // 创建完整的位置对象
+                    homelocation = new Location(world, x, y, z, yaw, pitch);
 
                 } else {
                     fromPlayer.sendMessage(Component.text("❎你还没有设置家的位置！请使用/sethome设置！")
@@ -425,12 +359,9 @@ public class Tpa {
                         .count(1)
                         .spawn();
             }
-            // 获取所有在线玩家
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                // 为每个在线玩家播放音效
                 onlinePlayer.playSound(fromPlayer.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 5f, 5f);
             }
-            // 发光
             PotionEffect joinEffect = new PotionEffect(PotionEffectType.GLOWING,10,1,false,false);
             fromPlayer.addPotionEffect(joinEffect);
 
@@ -438,7 +369,6 @@ public class Tpa {
             String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
             try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                  PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-                // 设置插入的数据
                 pstmt.setString(1, playerfrom);
                 pstmt.setString(2, playerto);
                 pstmt.setLong(3, now_time);
@@ -453,11 +383,9 @@ public class Tpa {
     public static boolean sethome(Player player){
         String uuid = player.getUniqueId().toString();
 
-        // 检查冷却时间
-        long homecooldown = loadTpa().getHomecooldown() * 1000; // 转换为毫秒
+        long homecooldown = loadTpa().getHomecooldown() * 1000;
         long currentTime = System.currentTimeMillis();
 
-        // 查询玩家最近一次设置家的时间
         String checkSQL = "SELECT timestemp FROM HOME WHERE uuid = ?";
         String url = "jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db";
 
@@ -472,52 +400,54 @@ public class Tpa {
                 long timeDifference = currentTime - lastSetTime;
 
                 if (timeDifference < homecooldown) {
-                    long remainingTime = (homecooldown - timeDifference) / 1000; // 转换为秒
-
+                    long remainingTime = (homecooldown - timeDifference) / 1000;
                     String timeFormatted = formatTime(remainingTime);
-
                     Component message = Component.text("❎设置家的冷却时间还未到！剩余时间: ", TextColor.color(255, 0, 0))
                             .append(Component.text(timeFormatted, TextColor.color(255, 255, 0)));
                     player.sendMessage(message);
                     return false;
                 }
             }
-
         } catch (SQLException e) {
-            // 如果查询出错，仍然允许设置家
             if (loadTpa().isDebug()) {
                 Bukkit.getServer().getLogger().log(Level.SEVERE, "查询家的冷却时间时出错", e);
             }
         }
 
-        // 通过冷却检查
         Location loc = player.getLocation();
-        int x = (int) loc.getX();
-        int y = (int) loc.getY();
-        int z = (int) loc.getZ();
-        String locationStr = x + "," + y + "," + z;
+        String worldName = loc.getWorld().getName();
+        double x = loc.getX();
+        double y = loc.getY();
+        double z = loc.getZ();
+        float yaw = loc.getYaw();
+        float pitch = loc.getPitch();
         long timestamp = currentTime;
 
-        String insertSQL = "INSERT INTO HOME (uuid, location, timestemp) VALUES (?, ?, ?) " +
-                "ON CONFLICT(uuid) DO UPDATE SET location = excluded.location, timestemp = excluded.timestemp";
+        // 修改插入语句，包含所有位置字段
+        String insertSQL = "INSERT INTO HOME (uuid, world, x, y, z, yaw, pitch, timestemp) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON CONFLICT(uuid) DO UPDATE SET world = excluded.world, x = excluded.x, y = excluded.y, z = excluded.z, yaw = excluded.yaw, pitch = excluded.pitch, timestemp = excluded.timestemp";
 
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
 
             pstmt.setString(1, uuid);
-            pstmt.setString(2, locationStr);
-            pstmt.setLong(3, timestamp);
+            pstmt.setString(2, worldName);
+            pstmt.setDouble(3, x);
+            pstmt.setDouble(4, y);
+            pstmt.setDouble(5, z);
+            pstmt.setFloat(6, yaw);
+            pstmt.setFloat(7, pitch);
+            pstmt.setLong(8, timestamp);
 
             pstmt.executeUpdate();
             Component message = Component.text("🏡家已设置!: ", TextColor.color(255, 255, 255))
-                    .append(Component.text("(" + x + "," + y + "," + z + ")", TextColor.color(0, 255, 0)));
+                    .append(Component.text("世界: " + worldName + " (" + (int)x + "," + (int)y + "," + (int)z + ")", TextColor.color(0, 255, 0)));
             player.sendMessage(message);
 
-            // 如果是debug模式，记录设置时间
             if (loadTpa().isDebug()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String timeStr = sdf.format(new Date(timestamp));
-                Bukkit.getServer().getLogger().info("玩家 " + player.getName() + " 在 " + timeStr + " 设置家");
+                Bukkit.getServer().getLogger().info(player.getName() + " 在 " + timeStr + " 设置家");
             }
 
             return true;
@@ -570,7 +500,6 @@ public class Tpa {
         return false;
     }
     private static boolean isDangerousBlock(Material material) {
-        // 所有危险方块的类型
         return material == Material.LAVA ||
                 material == Material.MAGMA_BLOCK ||
                 material == Material.CACTUS ||
@@ -579,47 +508,12 @@ public class Tpa {
                 material == Material.CAMPFIRE ||
                 material == Material.SOUL_CAMPFIRE ||
                 material == Material.END_PORTAL ||
-                material == Material.END_PORTAL_FRAME || // 虽然框架不是危险，但通常我们可能也排除，根据需求调整
+                material == Material.END_PORTAL_FRAME ||
                 material == Material.NETHER_PORTAL ||
                 material == Material.WITHER_ROSE ||
                 material == Material.SWEET_BERRY_BUSH ||
-                material == Material.POWDER_SNOW || // 陷进去的方块
+                material == Material.POWDER_SNOW ||
                 material == Material.LAVA_CAULDRON;
-    }
-    private static Location parseLocationString(String locationStr, Player player) {
-        try {
-            // 假设格式为 "world:x,y,z" 或 "x,y,z"
-            String[] parts = locationStr.split(":");
-            World world;
-            String coordsStr;
-
-            if (parts.length == 2) {
-                // 格式为 "world:x,y,z"
-                String worldName = parts[0];
-                world = Bukkit.getWorld(worldName);
-                coordsStr = parts[1];
-            } else {
-                // 格式为 "x,y,z" - 使用玩家当前世界
-                world = player.getWorld();
-                coordsStr = locationStr;
-            }
-
-            if (world == null) {
-                world = player.getWorld(); // 如果世界不存在，使用玩家当前世界
-            }
-
-            // 解析坐标
-            String[] coords = coordsStr.split(",");
-            double x = Double.parseDouble(coords[0]);
-            double y = Double.parseDouble(coords[1]);
-            double z = Double.parseDouble(coords[2]);
-
-            return new Location(world, x, y, z);
-
-        } catch (Exception e) {
-//            System.out.println("解析位置字符串时出错: " + e.getMessage());
-            return null;
-        }
     }
 }
 class HomeData {
@@ -631,11 +525,9 @@ class HomeData {
         this.timestamp = timestamp;
     }
 
-    // Getters
     public Location getLocation() { return location; }
     public long getTimestamp() { return timestamp; }
 
-    // 获取格式化的时间字符串
     public String getFormattedTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date(timestamp));
