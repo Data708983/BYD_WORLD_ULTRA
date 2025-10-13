@@ -8,13 +8,38 @@ blacklist:
   - "adsddd"
 # 默认公告
 default:
-  title: "Default notice"
-  content: "Default content"
+  title: "Default notice: %player_name%"
+  content:
+    - "══════════════════════════════"
+    - "第一行内容"
+    - "第二行内容"
+    - "第三行内容  %img_neitherdoor%"
+    - "最后一行 %img_heart%"
+    - "══════════════════════════════"
 # 玩家特定公告
 player:
   - name: "example name1"
-    title: "name1: Welcome to 1.21.7 !"
-    content: "name: Welcome to BYDWORLD !"
+    title: "name1: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
   - name: "example name2"
-    title: "name2: Welcome to 1.21.7 !"
-    content: "name2: Welcome to BYDWORLD !"
+    title: "name2: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
+  - name: "testplayer"
+    title: "测试玩家公告"
+    content:
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
