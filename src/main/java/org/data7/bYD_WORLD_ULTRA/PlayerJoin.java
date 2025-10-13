@@ -1,7 +1,6 @@
-package org.data7.bYD_WORLD_UTRAL;
+package org.data7.bYD_WORLD_ULTRA;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import com.mojang.brigadier.Message;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -17,11 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputFilter;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class PlayerJoin {
     private static final Logger log = LoggerFactory.getLogger(PlayerJoin.class);
@@ -89,10 +85,10 @@ public class PlayerJoin {
 
         /** 加载 Broadcast 公告模块: broadcast.yml */
         public void loadBroadcast(Player player) {
-            File broadcastFile = new File(BYD_WORLD_UTRAL.getPlugin(BYD_WORLD_UTRAL.class).getDataFolder(), "broadcast.yml");
+            File broadcastFile = new File(BYD_WORLD_ULTRA.getPlugin(BYD_WORLD_ULTRA.class).getDataFolder(), "broadcast.yml");
             YamlConfiguration broadcastConfig = YamlConfiguration.loadConfiguration(broadcastFile);
             if (!broadcastFile.exists()) {
-                BYD_WORLD_UTRAL.getPlugin(BYD_WORLD_UTRAL.class).saveResource("config.yml", false);
+                BYD_WORLD_ULTRA.getPlugin(BYD_WORLD_ULTRA.class).saveResource("config.yml", false);
             }
             Bukkit.getServer().getLogger().info("BROADCAST配置加载成功!");
             // 是否启用Broadcast

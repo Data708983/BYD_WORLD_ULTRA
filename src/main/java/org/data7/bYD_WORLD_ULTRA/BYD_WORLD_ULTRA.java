@@ -1,4 +1,4 @@
-package org.data7.bYD_WORLD_UTRAL;
+package org.data7.bYD_WORLD_ULTRA;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -13,9 +13,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.UUID;
 
-import static org.data7.bYD_WORLD_UTRAL.Tpa.*;
+import static org.data7.bYD_WORLD_ULTRA.Tpa.*;
 
-public final class BYD_WORLD_UTRAL extends JavaPlugin {
+public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
     // 从左到右的渐变生成方法
     private String generateHorizontalGradientText(String text) {
@@ -59,13 +59,13 @@ public final class BYD_WORLD_UTRAL extends JavaPlugin {
 //                "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)");
 
         getServer().getLogger().info(generateHorizontalGradientText(
-                "\n ____  _  _  ____        __  __  ____  ____    __    __   \n" +
-                        "(  _ \\( \\/ )(  _ \\      (  )(  )(_  _)(  _ \\  /__\\  (  )  \n" +
-                        " ) _ < \\  /  )(_) ) ___  )(__)(   )(   )   / /(__)\\  )(__ \n" +
-                        "(____/ (__) (____/ (___)(______) (__) (_)\\_)(__)(__)(____)"
+                " ____  _  _  ____        __  __  __    ____  ____    __   \n" +
+                "(  _ \\( \\/ )(  _ \\      (  )(  )(  )  (_  _)(  _ \\  /__\\  \n" +
+                " ) _ < \\  /  )(_) ) ___  )(__)(  )(__   )(   )   / /(__)\\ \n" +
+                "(____/ (__) (____/ (___)(______)(____) (__) (_)\\_)(__)(__)"
         ));
 
-        getServer().getLogger().info("BYD_WORLD_UTRAL is enabled!");
+        getServer().getLogger().info("BYD_WORLD_ULTRA is enabled!");
         String version = getDescription().getVersion();
         getServer().getLogger().info("Plugin version:" + "\033[1;34m" + version + "\033[0m");
 

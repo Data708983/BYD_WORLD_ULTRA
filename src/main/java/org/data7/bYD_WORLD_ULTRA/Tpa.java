@@ -1,11 +1,10 @@
-package org.data7.bYD_WORLD_UTRAL;
+package org.data7.bYD_WORLD_ULTRA;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -14,7 +13,6 @@ import org.bukkit.potion.PotionEffectType;
 import java.io.File;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class Tpa {
@@ -25,7 +23,7 @@ public class Tpa {
             throw new RuntimeException(e);
         }
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +35,7 @@ public class Tpa {
                 "uuidto TEXT NOT NULL, " +
                 "timestemp INTEGER, " +
                 "available INTEGER);";
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
              Statement stmt = conn.createStatement()) {
             // 执行SQL语句
             stmt.execute(sql);
@@ -50,7 +48,7 @@ public class Tpa {
 //        // 插入数据的SQL语句
 //        String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
 //
-//        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+//        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
 //             PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
 //            // 设置插入的数据
 //            pstmt.setString(1, "e4037d10-e436-35e4-9c45-594a12ff44d0");
@@ -99,7 +97,7 @@ public class Tpa {
     }
 
     public static TpaConfig loadTpa() {
-        BYD_WORLD_UTRAL plugin = BYD_WORLD_UTRAL.getPlugin(BYD_WORLD_UTRAL.class);
+        BYD_WORLD_ULTRA plugin = BYD_WORLD_ULTRA.getPlugin(BYD_WORLD_ULTRA.class);
         File tpaFile = new File(plugin.getDataFolder(), "tpa.yml");
         YamlConfiguration tpaConfig = YamlConfiguration.loadConfiguration(tpaFile);
 
@@ -122,7 +120,7 @@ public class Tpa {
         // 在debug模式下打印数据库记录
         if(false) {
             String readSql = "SELECT * FROM TPA";
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                  Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(readSql)) {
 
@@ -148,7 +146,7 @@ public class Tpa {
         // 修改SQL以获取最近的一条记录（按id降序）
         String readSql = "SELECT * FROM TPA WHERE uuidfrom = ? ORDER BY id DESC LIMIT 1";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
              PreparedStatement pstmt = conn.prepareStatement(readSql)) {
 
             pstmt.setString(1, playeruuid);
@@ -214,7 +212,7 @@ public class Tpa {
 
             fromPlayer.teleport(targetLocation);
             String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                 PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
                 // 设置插入的数据
                 pstmt.setString(1, playerfrom);
@@ -319,7 +317,7 @@ public class Tpa {
                 fromPlayer.teleport(selectedLocation);
 
                 String insertSql = "INSERT INTO TPA (uuidfrom, uuidto, timestemp, available) VALUES (?, ?, ?, ?)";
-                try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_UTRAL/database.db");
+                try (Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/BYD_WORLD_ULTRA/database.db");
                      PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
                     // 设置插入的数据
                     pstmt.setString(1, playerfrom);

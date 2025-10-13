@@ -1,6 +1,6 @@
-name: BYD_WORLD_UTRAL
-version: '1.3-SNAPSHOT-For1.21.7'
-main: org.data7.bYD_WORLD_UTRAL.BYD_WORLD_UTRAL
+name: BYD_WORLD_ULTRA
+version: '2.0.0-SNAPSHOT-For1.21.8'
+main: org.data7.bYD_WORLD_ULTRA.BYD_WORLD_ULTRA
 api-version: '1.21'
 
 commands:
@@ -9,14 +9,14 @@ commands:
     usage: /<command>
     aliases:
       - s
-    permission: BYD_WORLD_UTRAL.suicide
+    permission: BYD_WORLD_ULTRA.suicide
     permission-message: no permission
   tpa:
     description: 🧭传送
     usage: /<command> tpa to/come [playeranme]
     aliases:
       - t
-    permission: BYD_WORLD_UTRAL.tpa
+    permission: BYD_WORLD_ULTRA.tpa
     permission-message: no permission
 permissions:
   BYD_WORLD_UTRAL.suicide:

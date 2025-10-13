@@ -1,21 +1,15 @@
-package org.data7.bYD_WORLD_UTRAL;
+package org.data7.bYD_WORLD_ULTRA;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.awt.*;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class Playerdeath implements Listener {
     @EventHandler
