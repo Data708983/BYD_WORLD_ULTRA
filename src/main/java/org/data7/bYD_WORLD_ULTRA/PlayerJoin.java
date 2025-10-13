@@ -1,6 +1,7 @@
 package org.data7.bYD_WORLD_ULTRA;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -99,34 +101,38 @@ public class PlayerJoin {
             List<String> blacklist = broadcastConfig.getStringList("blacklist");
             // 默认标题
             String defaultTitle = broadcastConfig.getString("default.title");
-            // 默认内容
-            String defaultContent = broadcastConfig.getString("default.content");
+            // 默认内容（按行读取）
+            List<String> defaultContent = broadcastConfig.getStringList("default.content");
             // 获取玩家特定公告
             List<Map<?, ?>> playerList = broadcastConfig.getMapList("player");
 
             // debug模式
             if(debug){
+                // 将默认内容列表转换为字符串用于调试输出
+                String defaultContentStr = String.join(", ", defaultContent);
                 Bukkit.getServer().getLogger().info(
                         "\n||DEBUG(可在配置文件 broadcast.yml 关闭)|| Broadcast Statues:\n"
                                 + "Debug:\t" + debug + "\n"
                                 + "Enable:\t" + enableBroadcast + "\n"
                                 + "Blacklist:\t" + blacklist + "\n"
                                 + "Default Title:\t" + defaultTitle + "\n"
-                                + "Default Content:\t" + defaultContent + "\n"
+                                + "Default Content:\t" + defaultContentStr + "\n"
                 );
                 for (Map<?, ?> players : playerList) {
                     String name = (String) players.get("name");
                     String title = (String) players.get("title");
-                    String content = (String) players.get("content");
+                    // 获取玩家特定内容列表
+                    List<String> contentList = (List<String>) players.get("content");
+                    String contentStr = contentList != null ? String.join(", ", contentList) : "null";
                     Bukkit.getServer().getLogger().info("\nPlayer:\t" + name
                             + "\nTitle:\t" + title
-                            + "\nContent:\t" + content + "\n"
+                            + "\nContent:\t" + contentStr + "\n"
                     );
                 }
             }
             boolean uniquePlayer = false;
             String Title = "";
-            String Contentent = "";
+            List<String> ContentList = new ArrayList<>();
 
             // 输出
             if(enableBroadcast){
@@ -134,20 +140,26 @@ public class PlayerJoin {
                     for(Map<?, ?> players : playerList) {
                         String name = (String) players.get("name");
                         String title = (String) players.get("title");
-                        String content = (String) players.get("content");
+                        // 获取玩家特定内容列表
+                        List<String> content = (List<String>) players.get("content");
                         if (player.getName().equals(name)) {
                             uniquePlayer = true;
                             Title = title;
-                            Contentent = content;
+                            ContentList = content != null ? content : new ArrayList<>();
                             break;
                         }
                     }
                     if (!uniquePlayer) {
                         Title = defaultTitle;
-                        Contentent = defaultContent;
+                        ContentList = defaultContent;
                     }
-                    player.sendRawMessage(Title);
-                    player.sendRawMessage(Contentent);
+                    if (Title != null) {
+                        player.sendRawMessage(PlaceholderAPI.setPlaceholders(player,Title));
+                    }
+                    // 按行发送内容
+                    for (String line : ContentList) {
+                        player.sendRawMessage(PlaceholderAPI.setPlaceholders(player,line));
+                    }
                 }
             }
         }
