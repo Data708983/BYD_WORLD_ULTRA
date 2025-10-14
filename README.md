@@ -22,11 +22,77 @@ ___
 ___
 ## 配置：
 config.yml
+
 ```暂无配置项```
+
 tpa.yml
-```enable: true```
+
+```# 是否启用传送
+enable: true
+# debug模式（与enable无关）
+debug: true
+# 冷却时间
+cooldown: 60
+# 确认期限
+reply: 60
+# 是否启用确认
+confirm: true
+# 传送方式
+# near（临近5格内安全地点，默认）、absolute（玩家绝对坐标）
+type: "near"
+#记录条数
+record: 50
+#改变家位置的冷却时间
+homecooldown: 86400```
+
 broadcast.yml
-```enable: true```
+
+```# 是否启用加入公告
+enable: true
+# 是否启用Debug（不受enable影响）
+debug: true
+# 不展示加入公告名单
+blacklist:
+  - "dadsad"
+  - "adsddd"
+# 默认公告
+default:
+  title: "Default notice: %player_name%"
+  content:
+    - "══════════════════════════════"
+    - "第一行内容"
+    - "第二行内容"
+    - "第三行内容  %img_neitherdoor%"
+    - "最后一行 %img_heart%"
+    - "══════════════════════════════"
+# 玩家特定公告
+player:
+  - name: "example name1"
+    title: "name1: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
+  - name: "example name2"
+    title: "name2: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
+  - name: "testplayer"
+    title: "测试玩家公告"
+    content:
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"```
+
 ___
 ## 依赖：
 - 软依赖：PlaceholderAPI
