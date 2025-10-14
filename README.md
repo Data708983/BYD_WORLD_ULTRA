@@ -2,7 +2,7 @@
   <p align="center"><img src="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Img/neitherDoor4.png" alt="BYD_ICON"></p>
 </a>
 <!-- <p align="center">Vanilla Survival Enhancement Server Basic Integration Plugin</p> -->
-<p align="center">原版生存加强服务器基础Paper插件</p>
+<p align="center">原版生存加强Paper插件</p>
 <h1 align="center">BYD_WORLD_ULTRA</h1>
 
 <p align="center">
