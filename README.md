@@ -103,6 +103,7 @@ player:
 ___
 ## 依赖：
 - 软依赖：PlaceholderAPI
+- 建议使用(Emoji+资源包)[https://modrinth.com/resourcepack/emoji-plus]以获得最佳使用体验
 ___
 ## 构建：
 希望及时试用最新版本可自行构建
