@@ -19,11 +19,13 @@
 <p align="center">
   <a href="#"><img src="https://img.shields.io/badge/MC_version-1.21.x-blue" alt="MC Version"></a>
 </p>
+<p align="center">
+ <a href="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/README_en.md">English docs</a> | <a href="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/README.md">中文手册</a>
+<br align="center">
 
 ## 简介
 **BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足[BYD_WORLD](https://skin.dataseven.fun/)服务器的需求的一款原版生存加强插件。
 
-___
 ## 功能
 - **所有功能均可配置是否启用**
 - **玩家间传送**：
