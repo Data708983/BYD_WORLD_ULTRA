@@ -1,6 +1,8 @@
 ## 简介
 **BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足[BYD_WORLD](https://skin.dataseven.fun/)服务器的需求的一款原版生存加强插件。
 
+目前测试版本：1.21.8
+
 ps:生产环境记得在配置文件中把debug关了
 ___
 ## 功能
