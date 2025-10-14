@@ -15,15 +15,14 @@
   <a href="#"><img src="https://img.shields.io/github/last-commit/Data708983/BYD_WORLD_ULTRA?color=%23638e66" alt="Last Commit"></a>
   <a href="#"><img src="https://img.shields.io/github/release-date/Data708983/BYD_WORLD_ULTRA?color=%15" alt="Release Date"></a>
   <a href="https://skin.dataseven.fun/"><img src="https://img.shields.io/badge/server-BYD__WORLD-%23cf51c6" alt="Server"></a>
-  
+</p>
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/MC_version-1.21.x-blue" alt="MC Version"></a>
 </p>
 
 ## 简介
 **BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足[BYD_WORLD](https://skin.dataseven.fun/)服务器的需求的一款原版生存加强插件。
 
-目前测试版本：1.21.8
-
-ps:生产环境记得在配置文件中把debug关了
 ___
 ## 功能
 - **所有功能均可配置是否启用**
@@ -48,7 +47,8 @@ ___
   - 玩家可点击聊天框 [点击传送] 按钮回到死亡位置，并获得3秒无敌状态
 ___
 ## 配置：
-所有配置文件热更新，无需reload
+- 所有配置文件热更新，无需reload
+- 实际使用时记得关闭debug
 
 config.yml
 ```
@@ -127,7 +127,7 @@ player:
 
 ___
 ## 依赖：
-- 软依赖：PlaceholderAPI
+- 软依赖：[PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
 - 建议使用:[Emoji+资源包](https://modrinth.com/resourcepack/emoji-plus)以获得最佳使用体验
 ___
 ## 构建：
