@@ -103,6 +103,8 @@ ___
 - 软依赖：PlaceholderAPI
 ___
 ## 构建：
+希望及时试用最新版本可自行构建
+
 本项目依赖gradle构建
 ```
 gradle clean build
