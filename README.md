@@ -4,7 +4,21 @@
 <!-- <p align="center">Vanilla Survival Enhancement Server Basic Integration Plugin</p> -->
 <p align="center">原版生存加强服务器基础集成插件</p>
 <h1 align="center">BYD_WORLD_ULTRA</h1>
+
+<p align="center">
+    Give us a star if you like this!
+</p>
+
+<p align="center">
+  <a href="https://github.com/Data708983/BYD_WORLD_ULTRA/releases"><img src="https://img.shields.io/github/downloads/Data708983/BYD_WORLD_ULTRA/total?color=%239F7AEA" alt="Release Downloads"></a>
+  <a href="#"><img src="https://img.shields.io/github/repo-size/Data708983/BYD_WORLD_ULTRA?color=6882C4" alt="GitHub Repo Size"></a>
+  <a href="#"><img src="https://img.shields.io/github/last-commit/Data708983/BYD_WORLD_ULTRA?color=%23638e66" alt="Last Commit"></a>
+  <a href="#"><img src="https://img.shields.io/github/release-date/Data708983/BYD_WORLD_ULTRA?color=%15" alt="Release Date"></a>
+  <a href="https://skin.dataseven.fun/"><img src="https://img.shields.io/badge/server-BYD__WORLD-%23cf51c6
+" alt="Server"></a>
   
+</p>
+
 ## 简介
 **BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足[BYD_WORLD](https://skin.dataseven.fun/)服务器的需求的一款原版生存加强插件。
 
