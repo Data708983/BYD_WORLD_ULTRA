@@ -117,5 +117,7 @@ ___
 ```
 gradle clean build
 ```
+
+更新日志：https://github.com/Data708983/BYD_WORLD_ULTRA/tree/master/Doc/Update
 ___
 技术能力有限，欢迎指出bug以及希望新增的功能，欢迎PR🙏🏻
