@@ -22,12 +22,13 @@ ___
 ___
 ## 配置：
 config.yml
-
-```暂无配置项```
+```
+暂无配置项
+```
 
 tpa.yml
-
-```# 是否启用传送
+```
+# 是否启用传送
 enable: true
 # debug模式（与enable无关）
 debug: true
@@ -43,11 +44,12 @@ type: "near"
 #记录条数
 record: 50
 #改变家位置的冷却时间
-homecooldown: 86400```
+homecooldown: 86400
+```
 
 broadcast.yml
-
-```# 是否启用加入公告
+```
+# 是否启用加入公告
 enable: true
 # 是否启用Debug（不受enable影响）
 debug: true
@@ -91,7 +93,8 @@ player:
       - "第一行内容"
       - "第二行内容"
       - "第三行内容"
-      - "最后一行"```
+      - "最后一行"
+```
 
 ___
 ## 依赖：
