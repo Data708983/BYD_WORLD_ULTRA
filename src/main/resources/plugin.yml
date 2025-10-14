@@ -1,5 +1,5 @@
 name: BYD_WORLD_ULTRA
-version: '2.0.3-SNAPSHOT-For1.21.8'
+version: '2.1.0-SNAPSHOT-For1.21.8'
 main: org.data7.bYD_WORLD_ULTRA.BYD_WORLD_ULTRA
 api-version: '1.21'
 softdepend: ["PlaceholderAPI"]
@@ -27,14 +27,14 @@ commands:
     description: 🏡设置家
     usage: /<command>
     aliases:
-      - t
+      - h
     permission: BYD_WORLD_ULTRA.sethome
     permission-message: no permission
 permissions:
-  BYD_WORLD_UTRAL.suicide:
+  BYD_WORLD_ULTRA.suicide:
     description: 紫砂
     default: true
-  BYD_WORLD_UTRAL.tpa:
+  BYD_WORLD_ULTRA.tpa:
     description: 传送
     default: true
   BYD_WORLD_ULTRA.sethome:
