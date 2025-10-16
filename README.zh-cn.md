@@ -8,7 +8,7 @@
   <p align="center"><img src="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Img/neitherDoor4.png" alt="BYD_ICON"></p>
 </a>
 <!-- <p align="center">Vanilla Survival Enhancement Server Basic Integration Plugin</p> -->
-<p align="center">原版生存加强Paper插件</p>
+<p align="center">原版生存加强 Paper 插件</p>
 <h1 align="center">BYD_WORLD_ULTRA</h1>
 
 <p align="center">
@@ -27,41 +27,56 @@
 </p>
 
 ## 简介
-**BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足[BYD_WORLD](https://skin.dataseven.fun/)服务器的需求的一款原版生存加强Paper插件。
+
+**BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足 [BYD_WORLD](https://skin.dataseven.fun/) 服务器的需求的一款原版生存加强 Paper 插件。
 
 ## 功能
-- **所有功能均可配置是否启用**
-- **玩家间传送**：
-  - 使用`/Tpa to (玩家名称)`传送至玩家
-  - 使用`/Tpa come (玩家名称)`邀请玩家协助
-  - 是否启用玩家确认/传送冷却/传送方式（包括绝对位置和安全位置）可在tpa.yml中配置
-- **Sethome功能**：
-  - 使用`/sethome`将当前位置设置为家
-  - 使用`/Tpa home`或`/Tpa to[come] (自己名称)`传送回家
-  - 所有Tpa命令共享冷却
-  - `/sethome`命令冷却时间可配置
-- **Broadcast公告功能**：
-  - 该功能用于玩家加入游戏时展示公告
-  - 支持多行配置、玩家独特公告、公告显示的黑名单等功能等
-  - 集成PlaceholderAPI，可在公告中使用占位符功能
-- **suicide自杀指令**：
-  - 使用`/suicide`指令自杀
-  - 可用权限插件配置权限
-- **死亡回溯功能**：
-  - 玩家死亡时，聊天框会输出玩家死亡坐标
-  - 玩家可点击聊天框 [点击传送] 按钮回到死亡位置，并获得3秒无敌状态
-___
-## 配置：
-- 所有配置文件热更新，无需reload
-- 实际使用时记得关闭debug
 
-config.yml
-```
-暂无配置项
+所有功能均可配置是否启用。
+
+### 玩家间传送
+
+- 使用 `/Tpa to (玩家名称)` 传送至玩家
+- 使用 `/Tpa come (玩家名称)` 邀请玩家协助
+- 是否启用玩家确认/传送冷却/传送方式（包括绝对位置和安全位置）可在 tpa.yml 中配置
+
+### Sethome 功能
+
+- 使用 `/sethome` 将当前位置设置为家
+- 使用 `/Tpa home` 或 `/Tpa to[come] (自己名称)` 传送回家
+- 所有 Tpa 命令共享冷却
+- `/sethome` 命令冷却时间可配置
+
+### Broadcast 公告功能
+
+- 该功能用于玩家加入游戏时展示公告
+- 支持多行配置、玩家独特公告、公告显示的黑名单等功能等
+- 集成 PlaceholderAPI，可在公告中使用占位符功能
+
+### suicide 自杀指令
+
+- 使用`/suicide`指令自杀
+- 可用权限插件配置权限
+
+### 死亡回溯功能
+
+- 玩家死亡时，聊天框会输出玩家死亡坐标
+- 玩家可点击聊天框 [点击传送] 按钮回到死亡位置，并获得3秒无敌状态
+
+## 配置
+
+- 所有配置文件热更新，无需 reload
+- 实际使用时记得关闭 debug
+
+### config.yml
+
+```yml
+# 暂无配置项
 ```
 
-tpa.yml
-```
+### tpa.yml
+
+```yml
 # 是否启用传送
 enable: true
 # debug模式（与enable无关）
@@ -81,16 +96,20 @@ record: 50
 homecooldown: 86400
 ```
 
-broadcast.yml
-```
+### broadcast.yml
+
+```yml
 # 是否启用加入公告
 enable: true
+
 # 是否启用Debug（不受enable影响）
 debug: true
+
 # 不展示加入公告名单
 blacklist:
   - "dadsad"
   - "adsddd"
+
 # 默认公告
 default:
   title: "Default notice: %player_name%"
@@ -101,6 +120,7 @@ default:
     - "第三行内容  %img_neitherdoor%"
     - "最后一行 %img_heart%"
     - "══════════════════════════════"
+
 # 玩家特定公告
 player:
   - name: "example name1"
@@ -130,19 +150,25 @@ player:
       - "最后一行"
 ```
 
-___
-## 依赖：
+
+## 依赖
+
 - 软依赖：[PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
-- 建议使用:[Emoji+资源包](https://modrinth.com/resourcepack/emoji-plus)以获得最佳使用体验
-___
-## 构建：
+
+- 建议使用：[Emoji+ 资源包](https://modrinth.com/resourcepack/emoji-plus)以获得最佳使用体验
+
+## 构建
+
 希望及时试用最新版本可自行构建
 
-本项目依赖gradle构建
-```
+本项目依赖 gradle 构建
+
+```sh
 gradle clean build
 ```
 
+---
+
 更新日志：https://github.com/Data708983/BYD_WORLD_ULTRA/tree/master/Doc/Update
-___
-技术能力有限，欢迎指出bug以及希望新增的功能，欢迎PR🙏🏻
+
+技术能力有限，欢迎指出 bug 以及希望新增的功能，欢迎 PR 🙏🏻
