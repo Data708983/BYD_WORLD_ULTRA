@@ -64,6 +64,10 @@ All features can be configured to be enabled or disabled.
 - When a player dies, the coordinates of the death location are echoed in the chat
 - There will be a clickable link to teleport to the death location in the chat
 
+### i18n Suppot
+
+- You can modify or create your i18n locale file in the lang folder
+
 ## Configuration
 
 - All configuration files support hot-reloading, no need to reload the server
