@@ -124,10 +124,10 @@ default:
   title: "Default notice: %player_name%"
   content:
     - "══════════════════════════════"
-    - "第一行内容"
-    - "第二行内容"
-    - "第三行内容  %img_neitherdoor%"
-    - "最后一行 %img_heart%"
+    - "Content Ln. 1"
+    - "Content Ln. 2"
+    - "Content Ln. 3  %img_neitherdoor%"
+    - "Content Ln. 4 %img_heart%"
     - "══════════════════════════════"
 
 # Player-specific announcements
@@ -136,27 +136,27 @@ player:
     title: "name1: Welcome to 1.21.8 !"
     content:
       - "══════════════════════════════"
-      - "第一行内容"
-      - "第二行内容"
-      - "第三行内容"
-      - "最后一行"
+      - "Content Ln. 1"
+      - "Content Ln. 2"
+      - "Content Ln. 3"
+      - "Content Ln. 4"
       - "══════════════════════════════"
   - name: "example name2"
     title: "name2: Welcome to 1.21.8 !"
     content:
       - "══════════════════════════════"
-      - "第一行内容"
-      - "第二行内容"
-      - "第三行内容"
-      - "最后一行"
+      - "Content Ln. 1"
+      - "Content Ln. 2"
+      - "Content Ln. 3"
+      - "Content Ln. 4"
       - "══════════════════════════════"
   - name: "testplayer"
-    title: "测试玩家公告"
+    title: "Test Player Announcement"
     content:
-      - "第一行内容"
-      - "第二行内容"
-      - "第三行内容"
-      - "最后一行"
+      - "Content Ln. 1"
+      - "Content Ln. 2"
+      - "Content Ln. 3"
+      - "Content Ln. 4"
 ```
 
 ## Dependencies
