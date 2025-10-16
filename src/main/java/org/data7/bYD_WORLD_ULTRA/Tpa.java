@@ -60,7 +60,7 @@ public class Tpa {
 
         loadTpa();
     }
-    /** 加载 TPA 传送模块: tpa.yml */
+    /** Load TPA Transfer Module: tpa.yml */
     public static class TpaConfig {
         private boolean enableTpa;
         private boolean debug;
@@ -130,25 +130,25 @@ public class Tpa {
                 long recordTimestamp = rs.getLong("timestemp");
                 long timeDifference = now_time - recordTimestamp;
                 if(loadTpa().isDebug()){
-                    Bukkit.getServer().getLogger().info("查询到最近记录:");
+                    Bukkit.getServer().getLogger().info("Query to the most recent record:");
                     Bukkit.getServer().getLogger().info("id: " + rs.getInt("id"));
                     Bukkit.getServer().getLogger().info("uuidfrom: " + rs.getString("uuidfrom"));
                     Bukkit.getServer().getLogger().info("uuidto: " + rs.getString("uuidto"));
                     Bukkit.getServer().getLogger().info("timestemp: " + recordTimestamp);
                     Bukkit.getServer().getLogger().info("available: " + rs.getInt("available"));
-                    Bukkit.getServer().getLogger().info("与当前时间差: " + timeDifference + "ms");
+                    Bukkit.getServer().getLogger().info("Time difference from the current time: " + timeDifference + "ms");
                 }
                 if (timeDifference < cooldown*1000) {
                     long remainingTime = (cooldown * 1000 - timeDifference)/1000;
                     Player fromPlayer = Bukkit.getPlayer(UUID.fromString(playeruuid));
-                    fromPlayer.sendMessage(Component.text("❎仍在冷却中，剩余时间: ",TextColor.color(255,0,0)).append(Component.text(remainingTime + "s")));
+                    fromPlayer.sendMessage(Component.translatable("command.send.tpa.incooldown",Component.text(remainingTime + "s")).color(TextColor.color(255,0,0)));
                     return remainingTime;
                 }
             }
         } catch (SQLException e) {
-            Bukkit.getServer().getLogger().log(Level.SEVERE, "数据库查询错误", e);
+            Bukkit.getServer().getLogger().log(Level.SEVERE, "Database query error", e);
         }
-        if(loadTpa().isDebug()) Bukkit.getServer().getLogger().info("无冷却限制");
+        if(loadTpa().isDebug()) Bukkit.getServer().getLogger().info("No cooling limit");
         return -1;
     }
     public static boolean tpa(String playerfrom,String playerto){
@@ -283,7 +283,7 @@ public class Tpa {
                     if (loadTpa().isDebug()) {
                         Bukkit.getServer().getLogger().info("No safe location found around player");
                     }
-                    Component message = Component.text("❎由于周围没有安全的位置而失败了!", TextColor.color(255, 0, 0));
+                    Component message = Component.translatable("command.send.tpa.nosafeplace").color(TextColor.color(255, 0, 0));
                     fromPlayer.sendMessage(message);
                     toPlayer.sendMessage(message);
                 }
@@ -294,7 +294,7 @@ public class Tpa {
                     }
                 }
             } else {
-                Bukkit.getServer().getLogger().info("Tpa ERROR:配置文件传送方式设置错误！");
+                Bukkit.getServer().getLogger().info("Tpa ERROR: The configuration file transfer method is set incorrectly!");
             }
             fromPlayer.playSound(fromPlayer.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
             toPlayer.playSound(toPlayer.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
@@ -326,7 +326,7 @@ public class Tpa {
                     // 获取世界对象
                     World world = Bukkit.getWorld(worldName);
                     if (world == null) {
-                        fromPlayer.sendMessage(Component.text("❎家的世界不存在或未加载！")
+                        fromPlayer.sendMessage(Component.translatable("command.send.tpa.home.worldnotfound")
                                 .color(TextColor.color(255, 0, 0)));
                         return false;
                     }
@@ -335,19 +335,19 @@ public class Tpa {
                     homelocation = new Location(world, x, y, z, yaw, pitch);
 
                 } else {
-                    fromPlayer.sendMessage(Component.text("❎你还没有设置家的位置！请使用/sethome设置！")
+                    fromPlayer.sendMessage(Component.translatable("command.send.tpa.home.nohomeset")
                             .color(TextColor.color(255, 0, 0)));
                     return true;
                 }
 
             } catch (SQLException e) {
-                fromPlayer.sendMessage(Component.text("❎查询家的位置时出现错误！")
+                fromPlayer.sendMessage(Component.translatable("command.error.tpa.home.sqlerror.location")
                         .color(TextColor.color(255, 0, 0)));
                 return true;
             }
 
             Location targetLocation = homelocation;
-            Component PlayerMsg = Component.text("🏠你回到了家中!", TextColor.color(255, 255, 225));
+            Component PlayerMsg = Component.translatable("command.send.tpa.home.welcomehome");
             fromPlayer.sendMessage(PlayerMsg);
 
             for (int i = 0; i < 500; i++) {
@@ -401,16 +401,15 @@ public class Tpa {
 
                 if (timeDifference < homecooldown) {
                     long remainingTime = (homecooldown - timeDifference) / 1000;
-                    String timeFormatted = formatTime(remainingTime);
-                    Component message = Component.text("❎设置家的冷却时间还未到！剩余时间: ", TextColor.color(255, 0, 0))
-                            .append(Component.text(timeFormatted, TextColor.color(255, 255, 0)));
+                    Component timeFormatted = formatTime(remainingTime);
+                    Component message = Component.translatable("command.send.sethome.incooldown",timeFormatted).color(TextColor.color(255, 0, 0));
                     player.sendMessage(message);
                     return false;
                 }
             }
         } catch (SQLException e) {
             if (loadTpa().isDebug()) {
-                Bukkit.getServer().getLogger().log(Level.SEVERE, "查询家的冷却时间时出错", e);
+                Bukkit.getServer().getLogger().log(Level.SEVERE, "There was an error when querying the cooldown of the home", e);
             }
         }
 
@@ -440,41 +439,52 @@ public class Tpa {
             pstmt.setLong(8, timestamp);
 
             pstmt.executeUpdate();
-            Component message = Component.text("🏡家已设置!: ", TextColor.color(255, 255, 255))
-                    .append(Component.text("世界: " + worldName + " (" + (int)x + "," + (int)y + "," + (int)z + ")", TextColor.color(0, 255, 0)));
+            Component message = Component.translatable("command.send.sethome.set",Component.text(worldName).color(TextColor.color(0, 225, 0)),Component.text(" (" + (int)x + "," + (int)y + "," + (int)z + ")"));
             player.sendMessage(message);
 
             if (loadTpa().isDebug()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String timeStr = sdf.format(new Date(timestamp));
-                Bukkit.getServer().getLogger().info(player.getName() + " 在 " + timeStr + " 设置家");
+                Bukkit.getServer().getLogger().info(player.getName() + " set home at " + timeStr);
             }
 
             return true;
         } catch (SQLException e) {
-            Component message = Component.text("❎设置家时出现错误！", TextColor.color(255, 0, 0));
+            Component message = Component.translatable("command.error.tpa.home.sqlerror.sethome").color(TextColor.color(255, 0, 0));
             player.sendMessage(message);
             if (loadTpa().isDebug()) {
-                Bukkit.getServer().getLogger().log(Level.SEVERE, "设置家时数据库错误", e);
+                Bukkit.getServer().getLogger().log(Level.SEVERE, "Database error when setting up home", e);
             }
             return false;
         }
     }
-    private static String formatTime(long seconds) {
+    private static Component formatTime(long seconds) {
         if (seconds < 60) {
-            return seconds + "秒";
+            return Component.text(seconds).append(Component.translatable("words.seconds"));
         } else if (seconds < 3600) {
             long minutes = seconds / 60;
             long remainingSeconds = seconds % 60;
-            return minutes + "分" + (remainingSeconds > 0 ? remainingSeconds + "秒" : "");
+            Component msg = Component.text(minutes).append(Component.translatable("words.minutes"));
+            if (remainingSeconds > 0) {
+                return msg.append(Component.text(remainingSeconds)).append(Component.translatable("words.seconds"));
+            }
+            else return msg;
         } else if (seconds < 86400) {
             long hours = seconds / 3600;
             long minutes = (seconds % 3600) / 60;
-            return hours + "小时" + (minutes > 0 ? minutes + "分" : "");
+            Component msg = Component.text(hours).append(Component.translatable("words.hours"));
+            if (minutes > 0) {
+                return msg.append(Component.text(minutes)).append(Component.translatable("words.minutes"));
+            }
+            else return msg;
         } else {
             long days = seconds / 86400;
             long hours = (seconds % 86400) / 3600;
-            return days + "天" + (hours > 0 ? hours + "小时" : "");
+            Component msg = Component.text(days).append(Component.translatable("words.days"));
+            if (hours > 0) {
+                return msg.append(Component.text(hours)).append(Component.translatable("words.hours"));
+            }
+            else return msg;
         }
     }
     private static boolean is_safe(Player toplayer, int[] position){
