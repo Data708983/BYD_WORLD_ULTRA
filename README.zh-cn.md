@@ -79,19 +79,26 @@
 ```yml
 # 是否启用传送
 enable: true
+
 # debug模式（与enable无关）
 debug: true
+
 # 冷却时间
 cooldown: 60
+
 # 确认期限
 reply: 60
+
 # 是否启用确认
 confirm: true
+
 # 传送方式
 # near（临近5格内安全地点，默认）、absolute（玩家绝对坐标）
 type: "near"
+
 #记录条数
 record: 50
+
 #改变家位置的冷却时间
 homecooldown: 86400
 ```

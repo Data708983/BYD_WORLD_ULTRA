@@ -31,3 +31,152 @@
 ## Introduction
 
 **BYD_WORLD_ULTRA** is a server-side integration plugin for Minecraft Paper servers. It is an original survival enhancement designed to meet the needs of the [BYD_WORLD](https://skin.dataseven.fun) server.
+
+## Features
+
+All features can be configured to be enabled or disabled.
+
+### Player Teleportation
+
+- Use `/Tpa to (player name)` to teleport to a player
+- Use `/Tpa come (player name)` to invite a player to assist (the invited player will teleport to YOU)
+- Configure whether to enable player confirmation/teleport cooldown/teleport method (including absolute position and safe position) in `tpa.yml`.
+
+### Sethome
+
+- Use `/sethome` to set the current location as home
+- Use `/Tpa home` or `/Tpa to[come] (your player name)` to teleport back home
+- All Tpa commands share the same cooldown timer (the timeout is configurable)
+
+### Broadcast Announcements
+
+- This feature is used to display announcements when players join the game
+- Supports multi-line configuration, player-specific announcements, announcement display blacklist, etc.
+- Integrates PlaceholderAPI, allowing the use of placeholders in announcements
+
+### Suicide
+
+- Use the `/suicide` command to commit a suicide
+- Permissions can be configured using a permissions plugin
+
+### Death Backtrace
+
+- When a player dies, the coordinates of the death location are echoed in the chat
+- There will be a clickable link to teleport to the death location in the chat
+
+## Configuration
+
+- All configuration files support hot-reloading, no need to reload the server
+
+- Remember to disable debug mode in actual use
+
+### config.yml
+
+```yml
+# (No items yet)
+```
+
+### tpa.yml
+
+```yml
+# TPA feature toggle
+enable: true
+
+# Debug mode (independent of enable)
+debug: true
+
+# Cooldown time
+cooldown: 60
+
+# Confirmation timeout
+reply: 60
+
+# Whether to enable confirmation
+confirm: true
+
+# Teleportation method
+# near (safe location within 5 blocks, default), absolute (player's absolute coordinates)
+type: "near"
+
+# Number of records
+record: 50
+
+# Cooldown of changing home location
+homecooldown: 86400
+```
+
+### broadcast.yml
+
+```yml
+# Broadcast feature toggle
+enable: true
+
+# Debug mode (independent of enable)
+debug: true
+
+# List of players who will not receive announcements
+blacklist:
+  - "dadsad"
+  - "adsddd"
+
+# Default announcement
+default:
+  title: "Default notice: %player_name%"
+  content:
+    - "══════════════════════════════"
+    - "第一行内容"
+    - "第二行内容"
+    - "第三行内容  %img_neitherdoor%"
+    - "最后一行 %img_heart%"
+    - "══════════════════════════════"
+
+# Player-specific announcements
+player:
+  - name: "example name1"
+    title: "name1: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
+  - name: "example name2"
+    title: "name2: Welcome to 1.21.8 !"
+    content:
+      - "══════════════════════════════"
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+      - "══════════════════════════════"
+  - name: "testplayer"
+    title: "测试玩家公告"
+    content:
+      - "第一行内容"
+      - "第二行内容"
+      - "第三行内容"
+      - "最后一行"
+```
+
+## Dependencies
+
+- Soft dependency: [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
+
+- Recommended: [Emoji+ Resource Pack](https://modrinth.com/resourcepack/emoji-plus) for the best experience
+
+## Building
+
+Feel free to build it yourself when you'd like to try the latest version.
+
+Gradle is required to build the project.
+
+```sh
+gradle clean build
+```
+
+---
+
+Check out the [Changelog](https://github.com/Data708983/BYD_WORLD_ULTRA/tree/master/Doc/Update).
+
+My technical skills are limited, so please report bugs and feature requests. PRs are welcome! 🙏🏻
