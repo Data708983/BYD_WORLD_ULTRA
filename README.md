@@ -25,3 +25,9 @@
 <p align="center">
   <a href="#"><img src="https://img.shields.io/badge/MC_version-1.21.x-blue" alt="MC Version"></a>
 </p>
+
+
+
+## Introduction
+
+**BYD_WORLD_ULTRA** is a server-side integration plugin for Minecraft Paper servers. It is an original survival enhancement designed to meet the needs of the [BYD_WORLD](https://skin.dataseven.fun) server.
