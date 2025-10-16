@@ -66,7 +66,7 @@ All features can be configured to be enabled or disabled.
 
 ### i18n Suppot
 
-- You can modify or create your i18n locale file in the lang folder
+- This plugin supports international language files, allowing you to edit or create relevant language files to customize almost all prompts! in the lang folder
 
 ## Configuration
 
