@@ -3,6 +3,7 @@ package org.data7.bYD_WORLD_ULTRA;
 import com.destroystokyo.paper.ParticleBuilder;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,10 +33,12 @@ public class PlayerJoin {
             Player player = event.getPlayer();
 
             // 构建欢迎消息
-            Component joinMessage = Component.text("🎉欢迎")
-                    .append(Component.text(player.getName())
-                            .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
-                    .append(Component.text("进入服务器!"));
+//            Component joinMessage = Component.text("🎉欢迎")
+//                    .append(Component.text(player.getName())
+//                            .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
+//                    .append(Component.text("进入服务器!"));            // 构建欢迎消息
+
+            Component joinMessage = Component.translatable("player.join.msg",Component.text(player.getName()).color(TextColor.color(255, 255, 0)));
 
             // 设置欢迎消息
             event.joinMessage(joinMessage);
@@ -59,10 +62,12 @@ public class PlayerJoin {
             Player player = event.getPlayer();
 
             // 构建退出消息
-            Component quitmessage = Component.text("🚗")
-                    .append(Component.text(player.getName())
-                            .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
-                    .append(Component.text("暂时离开了!"));
+//            Component quitmessage = Component.text("🚗")
+//                    .append(Component.text(player.getName())
+//                            .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
+//                    .append(Component.text("暂时离开了!"));
+
+            Component quitmessage = Component.translatable("player.exit.msg",Component.text(player.getName()).color(TextColor.color(255, 255, 0)));
 
             // 设置离开消息
             event.quitMessage(quitmessage);
@@ -92,7 +97,7 @@ public class PlayerJoin {
             if (!broadcastFile.exists()) {
                 BYD_WORLD_ULTRA.getPlugin(BYD_WORLD_ULTRA.class).saveResource("config.yml", false);
             }
-            Bukkit.getServer().getLogger().info("BROADCAST配置加载成功!");
+//            Bukkit.getServer().getLogger().info("BROADCAST配置加载成功!");
             // 是否启用Broadcast
             boolean enableBroadcast = broadcastConfig.getBoolean("enable");
             // 是否启用debug (不受enable影响)
@@ -111,7 +116,7 @@ public class PlayerJoin {
                 // 将默认内容列表转换为字符串用于调试输出
                 String defaultContentStr = String.join(", ", defaultContent);
                 Bukkit.getServer().getLogger().info(
-                        "\n||DEBUG(可在配置文件 broadcast.yml 关闭)|| Broadcast Statues:\n"
+                        "\n||DEBUG(Available in the configuration file broadcast.yml)|| Broadcast Statues:\n"
                                 + "Debug:\t" + debug + "\n"
                                 + "Enable:\t" + enableBroadcast + "\n"
                                 + "Blacklist:\t" + blacklist + "\n"

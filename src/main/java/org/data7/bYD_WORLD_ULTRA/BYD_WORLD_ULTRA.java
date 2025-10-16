@@ -1,32 +1,38 @@
 package org.data7.bYD_WORLD_ULTRA;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationStore;
+import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.data7.bYD_WORLD_ULTRA.PAPI.PAPI;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 import static org.data7.bYD_WORLD_ULTRA.Tpa.*;
 
 public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
     // 从左到右的渐变生成方法
-    private String generateHorizontalGradientText(String text) {
+    static public String generateHorizontalGradientText(String text) {
         String[] lines = text.split("\n");
         StringBuilder result = new StringBuilder();
 
@@ -113,6 +119,77 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
         this.getCommand("suicide").setExecutor(this);
         this.getCommand("tpa").setExecutor(this);
+
+        // i18n
+        File langFolder = new File(getDataFolder(), "lang");
+
+        if (!langFolder.exists()) {
+            Bukkit.getLogger().info(generateHorizontalGradientText("No Locals Folder Found, Created!"));
+            langFolder.mkdirs();
+            saveResource("lang/lang_en_us.properties", false);
+            saveResource("lang/lang_zh_cn.properties", false);
+        }
+
+        File[] filelist = langFolder.listFiles((dir, name) -> name.endsWith(".properties"));
+
+        TranslationStore.StringBased<MessageFormat> store = TranslationStore.messageFormat(Key.key("bydworld:translation"));
+        boolean hasLanguages = false;
+
+        if (filelist != null && filelist.length > 0) {
+            Bukkit.getLogger().info(generateHorizontalGradientText("Found Locals:"));
+            for (File file : filelist) {
+                Locale locale = parseLocaleFromFilename(file.getName());
+                if (locale == null) {
+                    Bukkit.getLogger().warning("- " + "Skipping invalid language file: " + file.getName());
+                    continue;
+                }
+
+                Bukkit.getLogger().info(generateHorizontalGradientText("- " + locale.toString()));
+                try (FileInputStream fis = new FileInputStream(file);
+                     InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+
+                    ResourceBundle bundle = new PropertyResourceBundle(reader);
+                    store.registerAll(locale, bundle, true);
+                    hasLanguages = true;
+
+                } catch (IOException e) {
+                    Bukkit.getLogger().warning(" -> Failed to load language file: " + file.getName());
+                }
+            }
+        }
+
+        if (!hasLanguages) {
+            Bukkit.getLogger().info(generateHorizontalGradientText("No valid locals found, using en_us as default!"));
+            // 加载默认的en_us
+            try (InputStream is = getResource("lang/lang_en_us.properties")) {
+                if (is != null) {
+                    ResourceBundle bundle = new PropertyResourceBundle(new InputStreamReader(is, StandardCharsets.UTF_8));
+                    store.registerAll(new Locale("en", "us"), bundle, true);
+                }
+            } catch (IOException e) {
+                Bukkit.getLogger().warning("Failed to load default language file");
+            }
+        }
+
+        GlobalTranslator.translator().addSource(store);
+    }
+
+    private Locale parseLocaleFromFilename(String filename) {
+        try {
+            String nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
+            String[] parts = nameWithoutExt.split("_");
+
+            if (parts.length >= 3) {
+                String language = parts[1].toLowerCase();
+                String country = parts[2].toUpperCase();
+                return new Locale(language, country);
+            } else if (parts.length == 2) {
+                return new Locale(parts[1].toLowerCase());
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("Failed to parse locale from filename: " + filename);
+        }
+        return null;
     }
 
     @Override
@@ -133,10 +210,13 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
         if (label.equalsIgnoreCase("suicide")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                Component suicideMessage = Component.text("💀")
-                        .append(Component.text(player.getName())
-                                .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
-                        .append(Component.text("紫砂了!"));
+//                Component suicideMessage = Component.text("💀")
+//                        .append(Component.text(player.getName())
+//                                .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
+//                        .append(Component.text("紫砂了!"));
+
+                Component suicideMessage = Component.translatable("player.suicide.msg",Component.text(player.getName()).color(TextColor.color(255, 255, 0)));
+
                 player.getServer().broadcast(suicideMessage);
                 // 获取所有在线玩家
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -159,7 +239,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
                     // 检查参数数量
                     if (args.length > 2 || args.length < 1) {
-                        player.sendMessage(Component.text("❎命令用法错误！正确格式: /tpa to <玩家名> 或 /tpa come <玩家名>")
+                        player.sendMessage(Component.translatable("command.error.tpa")
                                 .color(TextColor.color(255, 0, 0)));
                         return true;
                     }
@@ -182,7 +262,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 else return true;
                             }
                             else{
-                                player.sendMessage(Component.text("❎命令用法错误！正确格式: /tpa to <玩家名> 或 /tpa come <玩家名> 或 /tpa home")
+                                player.sendMessage(Component.translatable("command.error.tpa")
                                         .color(TextColor.color(255, 0, 0)));
                                 return true;
                             }
@@ -192,7 +272,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                             targetPlayer = Bukkit.getPlayerExact(targetName); // 精确查找玩家
                             // 检查目标玩家是否在线
                             if (targetPlayer == null || !targetPlayer.isOnline()) {
-                                player.sendMessage(Component.text("❎找不到玩家: " + targetName)
+                                player.sendMessage(Component.translatable("command.error.playernotfound", Component.text(targetName))
                                         .color(TextColor.color(255, 0, 0)));
                                 return true;
                             }
@@ -204,46 +284,31 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
 
                                     if(tpaConfig.isConfirm()){
                                         // 发送提示信息
-                                        player.sendMessage(Component.text("已向 " + targetName + " 发送传送请求（你将传送到对方）"));
-                                        Component requestMessage = Component.text()
-                                                .append(Component.text(player.getName(), TextColor.color(255, 255, 0))
-                                                        .append(Component.text(" 请求传送到你这里!", TextColor.color(255, 255, 225))))
-                                                .build();
+                                        player.sendMessage(Component.translatable("command.send.tpa.to", Component.text(targetName)));
+                                        Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 225, 0)));
                                         targetPlayer.sendMessage(requestMessage);
 
                                         UUID finalPlayercome1 = playercome;
                                         Component responseButtons = Component.text()
-                                                .append(Component.text("[接受] ", TextColor.color(0, 255, 0))
+                                                .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
                                                         .clickEvent(ClickEvent.callback(clicker -> {
                                                             // 接受请求后的消息
-                                                            Component acceptTargetMsg = Component.text()
-                                                                    .append(Component.text(player.getName(), TextColor.color(255, 255, 0))
-                                                                            .append(Component.text(" 传送过来了!", TextColor.color(255, 255, 225))))
-                                                                    .build();
+                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
 
-                                                            Component acceptPlayerMsg = Component.text()
-                                                                    .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))
-                                                                            .append(Component.text(" 同意了你的请求!", TextColor.color(255, 255, 225))))
-                                                                    .build();
+                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+
                                                             tpa(finalPlayercome1.toString(),playerto.toString());
 
                                                             targetPlayer.sendMessage(acceptTargetMsg);
                                                             player.sendMessage(acceptPlayerMsg);
                                                         }))
                                                         .append(Component.text(" "))
-                                                        .append(Component.text("[拒绝]", TextColor.color(255, 0, 0))
+                                                        .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
                                                                 .clickEvent(ClickEvent.callback(clicker -> {
                                                                     // 拒绝请求后的消息
-                                                                    Component rejectTargetMsg = Component.text()
-                                                                            .append(Component.text("你拒绝了 ", TextColor.color(255, 255, 225)))
-                                                                            .append(Component.text(player.getName(), TextColor.color(255, 255, 0))
-                                                                                    .append(Component.text(" 的传送请求!", TextColor.color(255, 255, 225))))
-                                                                            .build();
+                                                                    Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
 
-                                                                    Component rejectPlayerMsg = Component.text()
-                                                                            .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))
-                                                                                    .append(Component.text(" 拒绝了你的请求!", TextColor.color(255, 255, 225))))
-                                                                            .build();
+                                                                    Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
 
                                                                     targetPlayer.sendMessage(rejectTargetMsg);
                                                                     player.sendMessage(rejectPlayerMsg);
@@ -253,15 +318,9 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                         targetPlayer.sendMessage(responseButtons);
                                     }
                                     else {
-                                        Component acceptTargetMsg = Component.text()
-                                                .append(Component.text(player.getName(), TextColor.color(255, 255, 0))
-                                                        .append(Component.text(" 传送过来了!", TextColor.color(255, 255, 225))))
-                                                .build();
+                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
 
-                                        Component acceptPlayerMsg = Component.text()
-                                                .append(Component.text("你传送到了 ", TextColor.color(255, 255, 225)))
-                                                .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)))
-                                                .build();
                                         tpa(playercome.toString(),playerto.toString());
 
                                         targetPlayer.sendMessage(acceptTargetMsg);
@@ -276,29 +335,22 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 playercome = targetPlayer.getUniqueId();
                                 if(tpaConfig.isConfirm()){
                                     // 发送提示信息
-                                    player.sendMessage(Component.text("已向 " + targetName + " 发送传送请求（请求对方传送到你）"));
+                                    player.sendMessage(Component.translatable("command.send.tpa.come", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))));
                                     // 构建请求消息
-                                    Component requestMessage = Component.text()
-                                            .append(Component.text(player.getName(), TextColor.color(255, 255, 0)))
-                                            .append(Component.text(" 请求你传送到TA那里!", TextColor.color(255, 255, 225)))
-                                            .build();
+                                    Component requestMessage = Component.translatable("command.send.tpa.come.confirm",Component.text(player.getName(), TextColor.color(255, 255, 0)));
+
                                     targetPlayer.sendMessage(requestMessage);
                                     // 构建交互按钮
                                     UUID finalPlayercome = playercome;
                                     Component responseButtons = Component.text()
-                                            .append(Component.text("[接受] ", TextColor.color(0, 255, 0))
+                                            .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
                                                     .clickEvent(ClickEvent.callback(clicker -> {
                                                         // 接受请求后的消息
                                                         if (isOnCoolDown(finalPlayercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
-                                                            Component acceptTargetMsg = Component.text()
-                                                                    .append(Component.text("你已传送到 ", TextColor.color(255, 255, 225)))
-                                                                    .append(Component.text(player.getName(), TextColor.color(255, 255, 0)))
-                                                                    .append(Component.text(" 的位置!", TextColor.color(255, 255, 225)))
-                                                                    .build();
-                                                            Component acceptPlayerMsg = Component.text()
-                                                                    .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)))
-                                                                    .append(Component.text(" 已传送到你这里!", TextColor.color(255, 255, 225)))
-                                                                    .build();
+                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+
+                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.to",Component.text(targetPlayer.getName()).color(TextColor.color(255, 255, 0)));
+
                                                             // 执行传送（对方传送到自己）
                                                             tpa(finalPlayercome.toString(), playerto.toString());
                                                             targetPlayer.sendMessage(acceptTargetMsg);
@@ -306,18 +358,12 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                                         }
                                                     }))
                                                     .append(Component.text(" "))
-                                                    .append(Component.text("[拒绝]", TextColor.color(255, 0, 0))
+                                                    .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
                                                             .clickEvent(ClickEvent.callback(clicker -> {
                                                                 // 拒绝请求后的消息
-                                                                Component rejectTargetMsg = Component.text()
-                                                                        .append(Component.text("你拒绝了 ", TextColor.color(255, 255, 225)))
-                                                                        .append(Component.text(player.getName(), TextColor.color(255, 255, 0)))
-                                                                        .append(Component.text(" 的传送请求!", TextColor.color(255, 255, 225)))
-                                                                        .build();
-                                                                Component rejectPlayerMsg = Component.text()
-                                                                        .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)))
-                                                                        .append(Component.text(" 拒绝了你的传送请求!", TextColor.color(255, 255, 225)))
-                                                                        .build();
+                                                                Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+
+                                                                Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.come.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
                                                                 targetPlayer.sendMessage(rejectTargetMsg);
                                                                 player.sendMessage(rejectPlayerMsg);
                                                             }))))
@@ -327,26 +373,16 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 else {
                                     long timerest = isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply());
                                     if (timerest == -1){
-                                        Component acceptTargetMsg = Component.text()
-                                                .append(Component.text("你已传送到 ", TextColor.color(255, 255, 225)))
-                                                .append(Component.text(player.getName(), TextColor.color(255, 255, 0)))
-                                                .append(Component.text(" 的位置!", TextColor.color(255, 255, 225)))
-                                                .build();
-                                        Component acceptPlayerMsg = Component.text()
-                                                .append(Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)))
-                                                .append(Component.text(" 已传送到你这里!", TextColor.color(255, 255, 225)))
-                                                .build();
+                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
                                         // 执行传送（对方传送到自己）
                                         tpa(playercome.toString(), playerto.toString());
                                         targetPlayer.sendMessage(acceptTargetMsg);
                                         player.sendMessage(acceptPlayerMsg);
                                     }
                                     else {
-                                        Component acceptTargetMsg1 = Component.text()
-                                                .append(Component.text(player.getName(), TextColor.color(255, 255, 0)))
-                                                .append(Component.text("请求你的援助! 但你还在冷却中~", TextColor.color(255, 255, 225)))
-                                                .build();
-                                        player.sendMessage(Component.text("❎TA仍在冷却中，剩余时间: ",TextColor.color(255,0,0)).append(Component.text(timerest + "s")));
+                                        Component acceptTargetMsg1 = Component.translatable("command.send.tpa.come.from.cooldown", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                        player.sendMessage(Component.translatable("command.send.tpa.come.to.cooldown",Component.text(timerest + "s").color(TextColor.color(225,0,0))));
                                         targetPlayer.sendMessage(acceptTargetMsg1);
                                     }
 
@@ -361,7 +397,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                                 else return true;
                             }
                             else {
-                                player.sendMessage(Component.text("❎命令用法错误！正确格式: /tpa to <玩家名> 或 /tpa come <玩家名> 或 /tpa home")
+                                player.sendMessage(Component.translatable("command.error.tpa")
                                         .color(TextColor.color(255, 0, 0)));
                                 return true;
                             }
@@ -373,12 +409,12 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
         }
         if (label.equalsIgnoreCase("sethome")){
             if (!(sender instanceof Player)) {
-                sender.sendMessage("§c只有玩家才能使用此命令！");
+                sender.sendMessage("§c Only players can use this command!");
                 return true;
             }
             Player player = (Player) sender;
             if (args.length != 0){
-                player.sendMessage(Component.text("❎命令用法错误！正确格式: /sethome")
+                player.sendMessage(Component.translatable("command.error.sethome")
                         .color(TextColor.color(255, 0, 0)));
                 return true;
             }
@@ -388,41 +424,5 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
             }
         }
         return false;
-    }
-
-    private Location parseLocationString(String locationStr, Player player) {
-        try {
-            // 假设格式为 "world:x,y,z" 或 "x,y,z"
-            String[] parts = locationStr.split(":");
-            World world;
-            String coordsStr;
-
-            if (parts.length == 2) {
-                // 格式为 "world:x,y,z"
-                String worldName = parts[0];
-                world = Bukkit.getWorld(worldName);
-                coordsStr = parts[1];
-            } else {
-                // 格式为 "x,y,z" - 使用玩家当前世界
-                world = player.getWorld();
-                coordsStr = locationStr;
-            }
-
-            if (world == null) {
-                world = player.getWorld(); // 如果世界不存在，使用玩家当前世界
-            }
-
-            // 解析坐标
-            String[] coords = coordsStr.split(",");
-            double x = Double.parseDouble(coords[0]);
-            double y = Double.parseDouble(coords[1]);
-            double z = Double.parseDouble(coords[2]);
-
-            return new Location(world, x, y, z);
-
-        } catch (Exception e) {
-//            System.out.println("解析位置字符串时出错: " + e.getMessage());
-            return null;
-        }
     }
 }

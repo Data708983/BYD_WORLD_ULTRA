@@ -8,7 +8,7 @@ public class PAPI extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "byd";
+        return "BWU";
     }
 
     @Override
@@ -29,6 +29,9 @@ public class PAPI extends PlaceholderExpansion {
 
         if (params.equalsIgnoreCase("sad")) {
             return "😭";
+        }
+        if (params.equalsIgnoreCase("playerjoin")) {
+            return player.getName();
         }
         return null;
     }
