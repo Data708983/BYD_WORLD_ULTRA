@@ -1,7 +1,7 @@
 # 是否启用传送
 enable: true
 # debug模式（与enable无关）
-debug: true
+debug: false
 # 冷却时间
 cooldown: 60
 # 确认期限

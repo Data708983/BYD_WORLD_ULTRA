@@ -1,7 +1,7 @@
 # 是否启用加入公告
 enable: true
 # 是否启用Debug（不受enable影响）
-debug: true
+debug: false
 # 不展示加入公告名单
 blacklist:
   - "dadsad"

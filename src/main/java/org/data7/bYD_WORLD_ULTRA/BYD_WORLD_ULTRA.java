@@ -1,5 +1,7 @@
 package org.data7.bYD_WORLD_ULTRA;
 
+import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.arguments.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -117,9 +119,55 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
         tpa.connect();
         tpa.InitialDB();
 
-        this.getCommand("suicide").setExecutor(this);
-        this.getCommand("tpa").setExecutor(this);
+//        this.getCommand("suicide").setExecutor(this);
+//        this.getCommand("tpa").setExecutor(this);
 
+        // command
+        new CommandAPICommand("suicide")
+                .withAliases("kill","s")
+                .withPermission(CommandPermission.NONE)
+                .withRequirement(sender -> (sender instanceof Player))
+                .executesPlayer((player, args) ->{
+                    Component suicideMessage = Component.translatable("player.suicide.msg",Component.text(player.getName()).color(TextColor.color(255, 255, 0)));
+                    player.getServer().broadcast(suicideMessage);
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        onlinePlayer.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 5f, 5f);
+                    }
+                    player.addScoreboardTag("suicide");
+                    player.setHealth(0);
+                })
+                .register();
+        new CommandAPICommand("tpa")
+                .withAliases("tp","t")
+                .withPermission(CommandPermission.NONE)
+                .withRequirement(sender -> (sender instanceof Player))
+                .withArguments(
+                        new StringArgument("home/to/come")
+                                .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info ->
+                                    new IStringTooltip[]{
+                                    BukkitStringTooltip.ofAdventureComponent("home", Component.translatable("command.tpa.tip.home")),
+                                    BukkitStringTooltip.ofAdventureComponent("to", Component.translatable("command.tpa.tip.to")),
+                                    BukkitStringTooltip.ofAdventureComponent("come", Component.translatable("command.tpa.tip.come"))
+                                }
+                        ))
+                )
+                .withOptionalArguments(
+                        new EntitySelectorArgument.OnePlayer("target player")
+                )
+                .executesPlayer((player, args) ->{
+                    onTpaCommand(player, args.rawArgs());
+                    return 1;
+                })
+                .register();
+        new CommandAPICommand("sethome")
+                .withAliases("h")
+                .withPermission(CommandPermission.NONE)
+                .withRequirement(sender -> (sender instanceof Player))
+                .executesPlayer((player, args) ->{
+                    sethome(player);
+                    return 1;
+                })
+                .register();
         // i18n
         File langFolder = new File(getDataFolder(), "lang");
 
@@ -206,207 +254,185 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /** 紫砂 */
-        if (label.equalsIgnoreCase("suicide")) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-//                Component suicideMessage = Component.text("💀")
-//                        .append(Component.text(player.getName())
-//                                .color(TextColor.color(255, 255, 0))) // 设置玩家名字为黄色
-//                        .append(Component.text("紫砂了!"));
-
-                Component suicideMessage = Component.translatable("player.suicide.msg",Component.text(player.getName()).color(TextColor.color(255, 255, 0)));
-
-                player.getServer().broadcast(suicideMessage);
-                // 获取所有在线玩家
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    // 为每个在线玩家播放音效
-                    onlinePlayer.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 5f, 5f);
-                }
-                player.addScoreboardTag("suicide");
-                player.setHealth(0);
-                return true;
-            }
-        }
         /** TPA */
-        if (label.equalsIgnoreCase("tpa")) {
-
-            Tpa.TpaConfig tpaConfig = loadTpa();
-
-            if (tpaConfig.isEnableTpa()) {
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-
-                    // 检查参数数量
-                    if (args.length > 2 || args.length < 1) {
-                        player.sendMessage(Component.translatable("command.error.tpa")
-                                .color(TextColor.color(255, 0, 0)));
-                        return true;
-                    }
-
-                    String subCommand;
-                    String targetName;
-                    Player targetPlayer;
-                    UUID playercome; // 请求发起者
-                    UUID playerto;   // 请求目标
-
-                    switch (args.length) {
-                        case 1:
-                            subCommand = args[0];
-                            if (subCommand.equalsIgnoreCase("home")) {
-                                playercome = player.getUniqueId();
-                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
-                                    tpa(playercome.toString(),playercome.toString());
-                                    return true;
-                                }
-                                else return true;
-                            }
-                            else{
-                                player.sendMessage(Component.translatable("command.error.tpa")
-                                        .color(TextColor.color(255, 0, 0)));
-                                return true;
-                            }
-                        case 2:
-                            subCommand = args[0];
-                            targetName = args[1];
-                            targetPlayer = Bukkit.getPlayerExact(targetName); // 精确查找玩家
-                            // 检查目标玩家是否在线
-                            if (targetPlayer == null || !targetPlayer.isOnline()) {
-                                player.sendMessage(Component.translatable("command.error.playernotfound", Component.text(targetName))
-                                        .color(TextColor.color(255, 0, 0)));
-                                return true;
-                            }
-                            if (subCommand.equalsIgnoreCase("to") && player != targetPlayer) {
-                                playercome = player.getUniqueId();
-                                playerto = targetPlayer.getUniqueId();
-
-                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1) {
-
-                                    if(tpaConfig.isConfirm()){
-                                        // 发送提示信息
-                                        player.sendMessage(Component.translatable("command.send.tpa.to", Component.text(targetName)));
-                                        Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 225, 0)));
-                                        targetPlayer.sendMessage(requestMessage);
-
-                                        UUID finalPlayercome1 = playercome;
-                                        Component responseButtons = Component.text()
-                                                .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
-                                                        .clickEvent(ClickEvent.callback(clicker -> {
-                                                            // 接受请求后的消息
-                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-
-                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
-
-                                                            tpa(finalPlayercome1.toString(),playerto.toString());
-
-                                                            targetPlayer.sendMessage(acceptTargetMsg);
-                                                            player.sendMessage(acceptPlayerMsg);
-                                                        }))
-                                                        .append(Component.text(" "))
-                                                        .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
-                                                                .clickEvent(ClickEvent.callback(clicker -> {
-                                                                    // 拒绝请求后的消息
-                                                                    Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-
-                                                                    Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
-
-                                                                    targetPlayer.sendMessage(rejectTargetMsg);
-                                                                    player.sendMessage(rejectPlayerMsg);
-                                                                }))))
-                                                .build();
-
-                                        targetPlayer.sendMessage(responseButtons);
-                                    }
-                                    else {
-                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
-
-                                        tpa(playercome.toString(),playerto.toString());
-
-                                        targetPlayer.sendMessage(acceptTargetMsg);
-                                        player.sendMessage(acceptPlayerMsg);
-                                    }
-
-                                }
-
-                            }
-                            else if (subCommand.equalsIgnoreCase("come") && player != targetPlayer) {
-                                playerto = player.getUniqueId();
-                                playercome = targetPlayer.getUniqueId();
-                                if(tpaConfig.isConfirm()){
-                                    // 发送提示信息
-                                    player.sendMessage(Component.translatable("command.send.tpa.come", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))));
-                                    // 构建请求消息
-                                    Component requestMessage = Component.translatable("command.send.tpa.come.confirm",Component.text(player.getName(), TextColor.color(255, 255, 0)));
-
-                                    targetPlayer.sendMessage(requestMessage);
-                                    // 构建交互按钮
-                                    UUID finalPlayercome = playercome;
-                                    Component responseButtons = Component.text()
-                                            .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
-                                                    .clickEvent(ClickEvent.callback(clicker -> {
-                                                        // 接受请求后的消息
-                                                        if (isOnCoolDown(finalPlayercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
-                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-
-                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.to",Component.text(targetPlayer.getName()).color(TextColor.color(255, 255, 0)));
-
-                                                            // 执行传送（对方传送到自己）
-                                                            tpa(finalPlayercome.toString(), playerto.toString());
-                                                            targetPlayer.sendMessage(acceptTargetMsg);
-                                                            player.sendMessage(acceptPlayerMsg);
-                                                        }
-                                                    }))
-                                                    .append(Component.text(" "))
-                                                    .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
-                                                            .clickEvent(ClickEvent.callback(clicker -> {
-                                                                // 拒绝请求后的消息
-                                                                Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-
-                                                                Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.come.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
-                                                                targetPlayer.sendMessage(rejectTargetMsg);
-                                                                player.sendMessage(rejectPlayerMsg);
-                                                            }))))
-                                            .build();
-                                    targetPlayer.sendMessage(responseButtons);
-                                }
-                                else {
-                                    long timerest = isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply());
-                                    if (timerest == -1){
-                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
-                                        // 执行传送（对方传送到自己）
-                                        tpa(playercome.toString(), playerto.toString());
-                                        targetPlayer.sendMessage(acceptTargetMsg);
-                                        player.sendMessage(acceptPlayerMsg);
-                                    }
-                                    else {
-                                        Component acceptTargetMsg1 = Component.translatable("command.send.tpa.come.from.cooldown", Component.text(player.getName(), TextColor.color(255, 255, 0)));
-                                        player.sendMessage(Component.translatable("command.send.tpa.come.to.cooldown",Component.text(timerest + "s").color(TextColor.color(225,0,0))));
-                                        targetPlayer.sendMessage(acceptTargetMsg1);
-                                    }
-
-                                }
-                            }
-                            else if (player == targetPlayer){
-                                playercome = player.getUniqueId();
-                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
-                                    tpa(playercome.toString(),playercome.toString());
-                                    return true;
-                                }
-                                else return true;
-                            }
-                            else {
-                                player.sendMessage(Component.translatable("command.error.tpa")
-                                        .color(TextColor.color(255, 0, 0)));
-                                return true;
-                            }
-                            return true;
-                    }
-
-                }
-            } else return false;
-        }
+//        if (label.equalsIgnoreCase("tpa")) {
+//
+//            Tpa.TpaConfig tpaConfig = loadTpa();
+//
+//            if (tpaConfig.isEnableTpa()) {
+//                if (sender instanceof Player) {
+//                    Player player = (Player) sender;
+//
+//                    // 检查参数数量
+//                    if (args.length > 2 || args.length < 1) {
+//                        player.sendMessage(Component.translatable("command.error.tpa")
+//                                .color(TextColor.color(255, 0, 0)));
+//                        return true;
+//                    }
+//
+//                    String subCommand;
+//                    String targetName;
+//                    Player targetPlayer;
+//                    UUID playercome; // 请求发起者
+//                    UUID playerto;   // 请求目标
+//
+//                    switch (args.length) {
+//                        case 1:
+//                            subCommand = args[0];
+//                            if (subCommand.equalsIgnoreCase("home")) {
+//                                playercome = player.getUniqueId();
+//                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+//                                    tpa(playercome.toString(),playercome.toString());
+//                                    return true;
+//                                }
+//                                else return true;
+//                            }
+//                            else{
+//                                player.sendMessage(Component.translatable("command.error.tpa")
+//                                        .color(TextColor.color(255, 0, 0)));
+//                                return true;
+//                            }
+//                        case 2:
+//                            subCommand = args[0];
+//                            targetName = args[1];
+//                            targetPlayer = Bukkit.getPlayerExact(targetName); // 精确查找玩家
+//                            // 检查目标玩家是否在线
+//                            if (targetPlayer == null || !targetPlayer.isOnline()) {
+//                                player.sendMessage(Component.translatable("command.error.playernotfound", Component.text(targetName))
+//                                        .color(TextColor.color(255, 0, 0)));
+//                                return true;
+//                            }
+//                            if (subCommand.equalsIgnoreCase("to") && player != targetPlayer) {
+//                                playercome = player.getUniqueId();
+//                                playerto = targetPlayer.getUniqueId();
+//
+//                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1) {
+//
+//                                    if(tpaConfig.isConfirm()){
+//                                        // 发送提示信息
+//                                        player.sendMessage(Component.translatable("command.send.tpa.to", Component.text(targetName)));
+//                                        Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 225, 0)));
+//                                        targetPlayer.sendMessage(requestMessage);
+//
+//                                        UUID finalPlayercome1 = playercome;
+//                                        Component responseButtons = Component.text()
+//                                                .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
+//                                                        .clickEvent(ClickEvent.callback(clicker -> {
+//                                                            // 接受请求后的消息
+//                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                            tpa(finalPlayercome1.toString(),playerto.toString());
+//
+//                                                            targetPlayer.sendMessage(acceptTargetMsg);
+//                                                            player.sendMessage(acceptPlayerMsg);
+//                                                        }))
+//                                                        .append(Component.text(" "))
+//                                                        .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
+//                                                                .clickEvent(ClickEvent.callback(clicker -> {
+//                                                                    // 拒绝请求后的消息
+//                                                                    Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                                    Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                                    targetPlayer.sendMessage(rejectTargetMsg);
+//                                                                    player.sendMessage(rejectPlayerMsg);
+//                                                                }))))
+//                                                .build();
+//
+//                                        targetPlayer.sendMessage(responseButtons);
+//                                    }
+//                                    else {
+//                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+//
+//                                        tpa(playercome.toString(),playerto.toString());
+//
+//                                        targetPlayer.sendMessage(acceptTargetMsg);
+//                                        player.sendMessage(acceptPlayerMsg);
+//                                    }
+//
+//                                }
+//
+//                            }
+//                            else if (subCommand.equalsIgnoreCase("come") && player != targetPlayer) {
+//                                playerto = player.getUniqueId();
+//                                playercome = targetPlayer.getUniqueId();
+//                                if(tpaConfig.isConfirm()){
+//                                    // 发送提示信息
+//                                    player.sendMessage(Component.translatable("command.send.tpa.come", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))));
+//                                    // 构建请求消息
+//                                    Component requestMessage = Component.translatable("command.send.tpa.come.confirm",Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//
+//                                    targetPlayer.sendMessage(requestMessage);
+//                                    // 构建交互按钮
+//                                    UUID finalPlayercome = playercome;
+//                                    Component responseButtons = Component.text()
+//                                            .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
+//                                                    .clickEvent(ClickEvent.callback(clicker -> {
+//                                                        // 接受请求后的消息
+//                                                        if (isOnCoolDown(finalPlayercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+//                                                            Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                            Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.to",Component.text(targetPlayer.getName()).color(TextColor.color(255, 255, 0)));
+//
+//                                                            // 执行传送（对方传送到自己）
+//                                                            tpa(finalPlayercome.toString(), playerto.toString());
+//                                                            targetPlayer.sendMessage(acceptTargetMsg);
+//                                                            player.sendMessage(acceptPlayerMsg);
+//                                                        }
+//                                                    }))
+//                                                    .append(Component.text(" "))
+//                                                    .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
+//                                                            .clickEvent(ClickEvent.callback(clicker -> {
+//                                                                // 拒绝请求后的消息
+//                                                                Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//
+//                                                                Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.come.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+//                                                                targetPlayer.sendMessage(rejectTargetMsg);
+//                                                                player.sendMessage(rejectPlayerMsg);
+//                                                            }))))
+//                                            .build();
+//                                    targetPlayer.sendMessage(responseButtons);
+//                                }
+//                                else {
+//                                    long timerest = isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply());
+//                                    if (timerest == -1){
+//                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+//                                        // 执行传送（对方传送到自己）
+//                                        tpa(playercome.toString(), playerto.toString());
+//                                        targetPlayer.sendMessage(acceptTargetMsg);
+//                                        player.sendMessage(acceptPlayerMsg);
+//                                    }
+//                                    else {
+//                                        Component acceptTargetMsg1 = Component.translatable("command.send.tpa.come.from.cooldown", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+//                                        player.sendMessage(Component.translatable("command.send.tpa.come.to.cooldown",Component.text(timerest + "s").color(TextColor.color(225,0,0))));
+//                                        targetPlayer.sendMessage(acceptTargetMsg1);
+//                                    }
+//
+//                                }
+//                            }
+//                            else if (player == targetPlayer){
+//                                playercome = player.getUniqueId();
+//                                if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+//                                    tpa(playercome.toString(),playercome.toString());
+//                                    return true;
+//                                }
+//                                else return true;
+//                            }
+//                            else {
+//                                player.sendMessage(Component.translatable("command.error.tpa")
+//                                        .color(TextColor.color(255, 0, 0)));
+//                                return true;
+//                            }
+//                            return true;
+//                    }
+//
+//                }
+//            } else return false;
+//        }
         if (label.equalsIgnoreCase("sethome")){
             if (!(sender instanceof Player)) {
                 sender.sendMessage("§c Only players can use this command!");
@@ -419,10 +445,150 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                 return true;
             }
             else {
-                Tpa.sethome(player);
+                sethome(player);
                 return true;
             }
         }
         return false;
+    }
+
+    public void onTpaCommand(Player sender, String[] args){
+        TpaConfig tpaConfig = loadTpa();
+        if (tpaConfig.isEnableTpa()) {
+            if (sender instanceof Player) {
+                Player player = sender;
+                if (args.length > 2 || args.length < 1) {
+                    player.sendMessage(Component.translatable("command.error.tpa")
+                            .color(TextColor.color(255, 0, 0)));
+                    return;
+                }
+                String subCommand;
+                String targetName;
+                Player targetPlayer;
+                UUID playercome; // Request initiator
+                UUID playerto;   // Request Target
+                switch (args.length) {
+                    case 1:
+                        subCommand = args[0];
+                        if (subCommand.equalsIgnoreCase("home")) {
+                            playercome = player.getUniqueId();
+                            if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+                                tpa(playercome.toString(),playercome.toString());
+                                return;
+                            }
+                            else return;
+                        }
+                        else{
+                            player.sendMessage(Component.translatable("command.error.tpa")
+                                    .color(TextColor.color(255, 0, 0)));
+                            return;
+                        }
+                    case 2:
+                        subCommand = args[0];
+                        targetName = args[1];
+                        targetPlayer = Bukkit.getPlayerExact(targetName);
+                        if (targetPlayer == null || !targetPlayer.isOnline()) {
+                            player.sendMessage(Component.translatable("command.error.playernotfound", Component.text(targetName))
+                                    .color(TextColor.color(255, 0, 0)));
+                            return;
+                        }
+                        if (subCommand.equalsIgnoreCase("to") && player != targetPlayer) {
+                            playercome = player.getUniqueId();
+                            playerto = targetPlayer.getUniqueId();
+                            if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1) {
+                                if(tpaConfig.isConfirm()){
+                                    player.sendMessage(Component.translatable("command.send.tpa.to", Component.text(targetName)));
+                                    Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 225, 0)));
+                                    targetPlayer.sendMessage(requestMessage);
+                                    UUID finalPlayercome1 = playercome;
+                                    Component responseButtons = Component.text()
+                                            .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
+                                                    .clickEvent(ClickEvent.callback(clicker -> {
+                                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+                                                        tpa(finalPlayercome1.toString(),playerto.toString());
+                                                        targetPlayer.sendMessage(acceptTargetMsg);
+                                                        player.sendMessage(acceptPlayerMsg);
+                                                    }))
+                                                    .append(Component.text(" "))
+                                                    .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
+                                                            .clickEvent(ClickEvent.callback(clicker -> {
+                                                                Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                                                Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.to.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+                                                                targetPlayer.sendMessage(rejectTargetMsg);
+                                                                player.sendMessage(rejectPlayerMsg);
+                                                            }))))
+                                            .build();
+                                    targetPlayer.sendMessage(responseButtons);
+                                }
+                                else {
+                                    Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.to.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                    Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.to.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+                                    tpa(playercome.toString(),playerto.toString());
+                                    targetPlayer.sendMessage(acceptTargetMsg);
+                                    player.sendMessage(acceptPlayerMsg);
+                                }
+                            }
+                        }
+                        else if (subCommand.equalsIgnoreCase("come") && player != targetPlayer) {
+                            playerto = player.getUniqueId();
+                            playercome = targetPlayer.getUniqueId();
+                            if(tpaConfig.isConfirm()){
+                                player.sendMessage(Component.translatable("command.send.tpa.come", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0))));
+                                Component requestMessage = Component.translatable("command.send.tpa.come.confirm",Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                targetPlayer.sendMessage(requestMessage);
+                                UUID finalPlayercome = playercome;
+                                Component responseButtons = Component.text()
+                                        .append(Component.translatable("command.send.tpa.accept").color(TextColor.color(0, 255, 0))
+                                                .clickEvent(ClickEvent.callback(clicker -> {
+                                                    if (isOnCoolDown(finalPlayercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+                                                        Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                                        Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.to",Component.text(targetPlayer.getName()).color(TextColor.color(255, 255, 0)));
+                                                        tpa(finalPlayercome.toString(), playerto.toString());
+                                                        targetPlayer.sendMessage(acceptTargetMsg);
+                                                        player.sendMessage(acceptPlayerMsg);
+                                                    }
+                                                }))
+                                                .append(Component.text(" "))
+                                                .append(Component.translatable("command.send.tpa.refuse").color(TextColor.color(255, 0, 0))
+                                                        .clickEvent(ClickEvent.callback(clicker -> {
+                                                            Component rejectTargetMsg = Component.translatable("command.send.tpa.refuse.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+
+                                                            Component rejectPlayerMsg = Component.translatable("command.send.tpa.refuse.come.to", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+                                                            targetPlayer.sendMessage(rejectTargetMsg);
+                                                            player.sendMessage(rejectPlayerMsg);
+                                                        }))))
+                                        .build();
+                                targetPlayer.sendMessage(responseButtons);
+                            }
+                            else {
+                                long timerest = isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply());
+                                if (timerest == -1){
+                                    Component acceptTargetMsg = Component.translatable("command.send.tpa.accept.come.from", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                    Component acceptPlayerMsg = Component.translatable("command.send.tpa.accept.come.no.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 255, 0)));
+                                    tpa(playercome.toString(), playerto.toString());
+                                    targetPlayer.sendMessage(acceptTargetMsg);
+                                    player.sendMessage(acceptPlayerMsg);
+                                }
+                                else {
+                                    Component acceptTargetMsg1 = Component.translatable("command.send.tpa.come.from.cooldown", Component.text(player.getName(), TextColor.color(255, 255, 0)));
+                                    player.sendMessage(Component.translatable("command.send.tpa.come.to.cooldown",Component.text(timerest + "s").color(TextColor.color(225,0,0))));
+                                    targetPlayer.sendMessage(acceptTargetMsg1);
+                                }
+                            }
+                        }
+                        else if (player == targetPlayer){
+                            playercome = player.getUniqueId();
+                            if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1){
+                                tpa(playercome.toString(),playercome.toString());
+                            }
+                        }
+                        else {
+                            player.sendMessage(Component.translatable("command.error.tpa")
+                                    .color(TextColor.color(255, 0, 0)));
+                        }
+                }
+            }
+        }
     }
 }
