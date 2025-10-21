@@ -20,16 +20,7 @@ public class Playerdeath implements Listener {
             event.deathMessage(null);
             player.removeScoreboardTag("suicide");
         }
-//        Component backmsg = Component.text("🪦死亡地点:(" + (int) deathLocation.getX() + "," + (int) deathLocation.getY() + "," + (int) deathLocation.getZ() + ") ").append(Component.text("[点击传送]", TextColor.color(8, 255, 242)).clickEvent(ClickEvent.callback(clicker->{
-//            player.teleport(deathLocation);
-//            PotionEffect backEffect1 = new PotionEffect(PotionEffectType.GLOWING,50,1,false,false);
-//            PotionEffect backEffect2 = new PotionEffect(PotionEffectType.RESISTANCE,50,999,false,false);
-//            PotionEffect backEffect3 = new PotionEffect(PotionEffectType.FIRE_RESISTANCE,50,999,false,false);
-//            player.addPotionEffect(backEffect1);
-//            player.addPotionEffect(backEffect2);
-//            player.addPotionEffect(backEffect3);
-//        })));
-        Component backmsg = Component.translatable("player.death.msg",Component.text("("+(int) deathLocation.getX() + "," + (int) deathLocation.getY() + "," + (int) deathLocation.getZ()+")"),Component.text("[点击传送]", TextColor.color(8, 255, 242)).clickEvent(ClickEvent.callback(clicker->{
+        Component backmsg = Component.translatable("player.death.msg",Component.text("("+(int) deathLocation.getX() + "," + (int) deathLocation.getY() + "," + (int) deathLocation.getZ()+")"),Component.translatable("player.death.button").color(TextColor.color(8, 255, 242)).clickEvent(ClickEvent.callback(clicker->{
             player.teleport(deathLocation);
             PotionEffect backEffect1 = new PotionEffect(PotionEffectType.GLOWING,50,1,false,false);
             PotionEffect backEffect2 = new PotionEffect(PotionEffectType.RESISTANCE,50,999,false,false);
