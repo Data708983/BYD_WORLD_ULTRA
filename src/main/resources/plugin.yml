@@ -1,8 +1,9 @@
 name: BYD_WORLD_ULTRA
-version: '2.1.2-SNAPSHOT-For1.21.8'
+version: '2.1.4-SNAPSHOT-For1.21.8'
 main: org.data7.bYD_WORLD_ULTRA.BYD_WORLD_ULTRA
 api-version: '1.21'
-depend: ["CommandAPI","PlaceholderAPI"]
+author: "Data_7"
+softdepend: ["PlaceholderAPI"]
 dependencies:
   server:
     PlaceholderAPI:
@@ -12,29 +13,3 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
-#commands:
-#  suicide:
-#    description: 🔪紫砂
-#    usage: /<command>
-#    permission: BYD_WORLD_ULTRA.suicide
-#    permission-message: no permission
-#  tpa:
-#    description: 🧭传送
-#    usage: /<command> to/come [playeranme]
-#    permission: BYD_WORLD_ULTRA.tpa
-#    permission-message: no permission
-#  sethome:
-#    description: 🏡设置家
-#    usage: /<command>
-#    permission: BYD_WORLD_ULTRA.sethome
-#    permission-message: no permission
-#permissions:
-#  BYD_WORLD_ULTRA.suicide:
-#    description: 紫砂
-#    default: true
-#  BYD_WORLD_ULTRA.tpa:
-#    description: 传送
-#    default: true
-#  BYD_WORLD_ULTRA.sethome:
-#    description: 设置家
-#    default: true

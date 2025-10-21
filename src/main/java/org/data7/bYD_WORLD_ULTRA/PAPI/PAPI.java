@@ -2,37 +2,41 @@ package org.data7.bYD_WORLD_ULTRA.PAPI;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.data7.bYD_WORLD_ULTRA.BYD_WORLD_ULTRA;
 import org.jetbrains.annotations.NotNull;
 
 public class PAPI extends PlaceholderExpansion {
+    private final BYD_WORLD_ULTRA plugin; //
+
+    public PAPI(BYD_WORLD_ULTRA plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull
+    public String getAuthor() {
+        return String.join(", ", plugin.getDescription().getAuthors());
+    }
+
+    @Override
+    @NotNull
+    public String getIdentifier() {
         return "BWU";
     }
 
     @Override
-    public @NotNull String getAuthor() {
-        return "data7";
+    @NotNull
+    public String getVersion() {
+        return plugin.getDescription().getVersion();
     }
 
     @Override
-    public @NotNull String getVersion() {
-        return "1.0.0";
+    public boolean persist() {
+        return true;
     }
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
-        if (params.equalsIgnoreCase("smile")) {
-            return "😀";
-        }
-
-        if (params.equalsIgnoreCase("sad")) {
-            return "😭";
-        }
-        if (params.equalsIgnoreCase("playerjoin")) {
-            return player.getName();
-        }
         return null;
     }
 }
