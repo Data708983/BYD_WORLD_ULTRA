@@ -1,15 +1,14 @@
 <p align="center">
     View this document in:<br> <a href="./README.md">English</a> | 简体中文
 </p>
-
----
-
 <a href="https://github.com/Data708983/BYD_WORLD_ULTRA">
   <p align="center"><img src="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Img/neitherDoor4.png" alt="BYD_ICON"></p>
 </a>
-<!-- <p align="center">Vanilla Survival Enhancement Server Basic Integration Plugin</p> -->
 <p align="center">原版生存加强 Paper 插件</p>
-<h1 align="center">BYD_WORLD_ULTRA</h1>
+
+<h1 align="center">
+    BYD_WORLD_ULTRA
+</h1>
 
 <p align="center">
     Give us a star if you like this!
@@ -28,24 +27,26 @@
 
 ## 简介
 
-**BYD_WORLD_ULTRA** 是一款服务器基础集成插件。是为了满足 [BYD_WORLD](https://skin.dataseven.fun/) 服务器的需求的一款原版生存加强 Paper 插件。
+**BYD_WORLD_ULTRA** 是一款服务器基础原版生存加强 Paper 插件。
+> 该文档请以[Modrinth](https://modrinth.com/plugin/byd_world_ultra)版本为准，更新可能不及时
 
 ## 功能
-
-所有功能均可配置是否启用。
+> 所有功能均可配置是否启用。
 
 ### 玩家间传送
 
-- 使用 `/Tpa to (玩家名称)` 传送至玩家
-- 使用 `/Tpa come (玩家名称)` 邀请玩家协助
+- 使用 `/tpa to (玩家名称)` 传送至玩家
+- 使用 `/tpa come (玩家名称)` 邀请玩家协助
 - 是否启用玩家确认/传送冷却/传送方式（包括绝对位置和安全位置）可在 tpa.yml 中配置
+- 别名：`/t`、`/tp`
 
 ### Sethome 功能
 
 - 使用 `/sethome` 将当前位置设置为家
-- 使用 `/Tpa home` 或 `/Tpa to[come] (自己名称)` 传送回家
-- 所有 Tpa 命令共享冷却
+- 使用 `/tpa home` 或 `/tpa to[come] (自己名称)` 传送回家
+- 所有 tpa 命令共享冷却
 - `/sethome` 命令冷却时间可配置
+- 别名：`/h`
 
 ### Broadcast 公告功能
 
@@ -57,6 +58,7 @@
 
 - 使用`/suicide`指令自杀
 - 可用权限插件配置权限
+- 别名：`/s`、`/kill`
 
 ### 死亡回溯功能
 
@@ -69,7 +71,7 @@
 
 ## 配置
 
-- 所有配置文件热更新，无需 reload
+- 所有配置文件（除语言文件）热更新，无需 reload 服务器
 - 实际使用时记得关闭 debug
 
 ### config.yml
@@ -174,12 +176,14 @@ player:
 
 本项目依赖 gradle 构建
 
+要集成CommandAPI，你应该构建shadowJar：
+
 ```sh
-gradle clean build
+gradle clean shadowJar
 ```
 
 ---
 
-更新日志：https://github.com/Data708983/BYD_WORLD_ULTRA/tree/master/Doc/Update
+更新日志：[Changelog](https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Update/2.0.X.md).
 
-技术能力有限，欢迎指出 bug 以及希望新增的功能，欢迎 PR 🙏🏻
+欢迎指出 bug 以及希望新增的功能，欢迎 PR 🙏🏻
