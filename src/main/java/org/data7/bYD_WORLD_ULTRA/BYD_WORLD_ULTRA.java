@@ -273,7 +273,7 @@ public final class BYD_WORLD_ULTRA extends JavaPlugin {
                             if (isOnCoolDown(playercome.toString(), tpaConfig.getCooldown(), tpaConfig.getReply()) == -1) {
                                 if(tpaConfig.isConfirm()){
                                     player.sendMessage(Component.translatable("command.send.tpa.to", Component.text(targetName)));
-                                    Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(targetPlayer.getName(), TextColor.color(255, 225, 0)));
+                                    Component requestMessage = Component.translatable("command.send.tpa.to.confirm", Component.text(player.getName(), TextColor.color(255, 225, 0)));
                                     targetPlayer.sendMessage(requestMessage);
                                     UUID finalPlayercome1 = playercome;
                                     Component responseButtons = Component.text()
