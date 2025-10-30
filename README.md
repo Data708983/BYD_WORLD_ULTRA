@@ -1,15 +1,14 @@
 <p align="center">
-    View this document in:<br> English | <a href="./README.zh-cn.md">简体中文</a>
+    View this document in:<br> English | <a href="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/README.zh-cn.md">简体中文</a>
 </p>
-
----
-
-<a href="https://github.com/Data708983/BYD_WORLD_ULTRA">
-  <p align="center"><img src="https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Img/neitherDoor4.png" alt="BYD_ICON"></p>
+<a herf="https://github.com/Data708983/BYD_WORLD_ULTRA">
+  <p align="center"><img src="https://cdn.modrinth.com/data/cached_images/10648d8abc879ed5077c4a7cdead2e3b13f462d7.png" alt="BYD_ICON"></p>
 </a>
-<!-- <p align="center">Vanilla Survival Enhancement Server Basic Integration Plugin</p> -->
 <p align="center">Paper Plugin of Vanilla Survival Enhancement</p>
-<h1 align="center">BYD_WORLD_ULTRA</h1>
+
+<h1 align="center">
+BYD_WORLD_ULTRA
+</h1>
 
 <p align="center">
     Give us a star if you like this!
@@ -30,23 +29,24 @@
 
 ## Introduction
 
-**BYD_WORLD_ULTRA** is a server-side integration plugin for Minecraft Paper servers. It is an original survival enhancement designed to meet the needs of the [BYD_WORLD](https://skin.dataseven.fun) server.
-
+**BWU** is a server-side integration plugin for Minecraft Paper servers. It is a vallina survival enhancement plugin.
+> Please refer to the [Modrinth](https://modrinth.com/plugin/byd_world_ultra) version of this document as the official version; updates may not be timely.
 ## Features
-
-All features can be configured to be enabled or disabled.
+> All features can be configured to be enabled or disabled.
 
 ### Player Teleportation
 
 - Use `/Tpa to (player name)` to teleport to a player
 - Use `/Tpa come (player name)` to invite a player to assist (the invited player will teleport to YOU)
-- Configure whether to enable player confirmation/teleport cooldown/teleport method (including absolute position and safe position) in `tpa.yml`.
+- Configure whether to enable player confirmation/teleport cooldown/teleport method (including absolute position and safe position) in `tpa.yml`
+- The aliases for this command are /t and /tp
 
 ### Sethome
 
 - Use `/sethome` to set the current location as home
 - Use `/Tpa home` or `/Tpa to[come] (your player name)` to teleport back home
 - All Tpa commands share the same cooldown timer (the timeout is configurable)
+- The aliases for this command are /h
 
 ### Broadcast Announcements
 
@@ -58,11 +58,12 @@ All features can be configured to be enabled or disabled.
 
 - Use the `/suicide` command to commit a suicide
 - Permissions can be configured using a permissions plugin
-
+- The aliases for this command are /s and /kill
 ### Death Backtrace
 
 - When a player dies, the coordinates of the death location are echoed in the chat
 - There will be a clickable link to teleport to the death location in the chat
+> When you teleport back to your death location, you gain 3 seconds of extreme resistance
 
 ### i18n Suppot
 
@@ -165,7 +166,7 @@ player:
 
 ## Dependencies
 
-- Soft dependency: [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
+- Soft dependencies: [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)
 
 - Recommended: [Emoji+ Resource Pack](https://modrinth.com/resourcepack/emoji-plus) for the best experience
 
@@ -175,12 +176,14 @@ Feel free to build it yourself when you'd like to try the latest version.
 
 Gradle is required to build the project.
 
+To integrate the CommandAPI, you should bulid the shadowJar:
+
 ```sh
-gradle clean build
+gradle clean shadowJar
 ```
 
 ---
 
-Check out the [Changelog](https://github.com/Data708983/BYD_WORLD_ULTRA/tree/master/Doc/Update).
+Check out the [Changelog](https://github.com/Data708983/BYD_WORLD_ULTRA/blob/master/Doc/Update/2.0.X.md).
 
-My technical skills are limited, so please report bugs and feature requests. PRs are welcome! 🙏🏻
+Please report bugs and feature requests. PRs are welcome! 🙏🏻
