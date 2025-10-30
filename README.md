@@ -36,17 +36,17 @@ BYD_WORLD_ULTRA
 
 ### Player Teleportation
 
-- Use `/Tpa to (player name)` to teleport to a player
-- Use `/Tpa come (player name)` to invite a player to assist (the invited player will teleport to YOU)
+- Use `/tpa to (player name)` to teleport to a player
+- Use `/tpa come (player name)` to invite a player to assist (the invited player will teleport to YOU)
 - Configure whether to enable player confirmation/teleport cooldown/teleport method (including absolute position and safe position) in `tpa.yml`
-- The aliases for this command are /t and /tp
+- The aliases for this command are `/t` and `/tp`
 
 ### Sethome
 
 - Use `/sethome` to set the current location as home
-- Use `/Tpa home` or `/Tpa to[come] (your player name)` to teleport back home
+- Use `/tpa home` or `/tpa to[come] (your player name)` to teleport back home
 - All Tpa commands share the same cooldown timer (the timeout is configurable)
-- The aliases for this command are /h
+- The aliases for this command is `/h`
 
 ### Broadcast Announcements
 
@@ -58,7 +58,7 @@ BYD_WORLD_ULTRA
 
 - Use the `/suicide` command to commit a suicide
 - Permissions can be configured using a permissions plugin
-- The aliases for this command are /s and /kill
+- The aliases for this command are `/s` and `/kill`
 ### Death Backtrace
 
 - When a player dies, the coordinates of the death location are echoed in the chat
@@ -71,7 +71,7 @@ BYD_WORLD_ULTRA
 
 ## Configuration
 
-- All configuration files support hot-reloading, no need to reload the server
+- All configuration files (except locale files) support hot-reloading, no need to reload the server
 
 - Remember to disable debug mode in actual use
 
